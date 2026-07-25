@@ -1,0 +1,455 @@
+/*
+ * DERSHA Design System
+ * Use these tokens and classes when porting pages from dirshaWebClient.
+ * Skills: web-design-guidelines, design-taste-frontend
+ */
+
+:root {
+  /* Brand */
+  --brand-primary: #059669;
+  --brand-primary-hover: #047857;
+  --brand-primary-light: #68dba9;
+  --brand-primary-muted: rgba(5, 150, 105, 0.15);
+  --brand-accent: #4edea3;
+  --brand-glow: rgba(5, 150, 105, 0.25);
+
+  /* Surfaces */
+  --surface-base: #0a0f0c;
+  --surface-raised: #0f1511;
+  --surface-overlay: #171d19;
+  --surface-elevated: #1b211d;
+  --surface-highlight: #252b28;
+
+  /* Text */
+  --text-primary: #f0f4f2;
+  --text-secondary: #bccac0;
+  --text-muted: #87948b;
+  --text-on-brand: #ffffff;
+
+  /* Borders */
+  --border-subtle: rgba(135, 148, 139, 0.12);
+  --border-default: rgba(135, 148, 139, 0.22);
+  --border-strong: rgba(135, 148, 139, 0.35);
+  --border-focus: var(--brand-primary);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.24);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.28);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.36);
+  --shadow-glow: 0 0 24px var(--brand-glow);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  /* Radius (one system) */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-pill: 9999px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+}
+
+/* Page shell */
+.page-shell {
+  min-height: 100dvh;
+  background-color: var(--surface-base);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.page-atmosphere {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.page-atmosphere::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 85% 10%, rgba(5, 150, 105, 0.08), transparent 60%),
+    radial-gradient(ellipse 50% 40% at 10% 90%, rgba(78, 222, 163, 0.06), transparent 55%);
+}
+
+.page-content {
+  position: relative;
+  z-index: 10;
+}
+
+/* Glass cards */
+.dersha-card {
+  background: rgba(23, 29, 25, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-md), var(--shadow-inset);
+  border-radius: var(--radius-xl);
+}
+
+.dersha-card-elevated {
+  background: rgba(27, 33, 29, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-lg), var(--shadow-inset);
+  border-radius: var(--radius-xl);
+}
+
+/* Header */
+.dersha-header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 4rem;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10, 15, 12, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.dersha-brand {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--brand-primary-light);
+}
+
+.dersha-brand-display {
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+/* Typography helpers */
+.dersha-heading {
+  color: var(--text-primary);
+  text-wrap: balance;
+  letter-spacing: -0.02em;
+}
+
+.dersha-subheading {
+  color: var(--text-secondary);
+  text-wrap: pretty;
+  line-height: 1.6;
+}
+
+.dersha-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Form elements */
+.dersha-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.dersha-input {
+  width: 100%;
+  background: var(--surface-overlay);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding-block: 1rem;
+  padding-inline: 1.25rem;
+  color: var(--text-primary);
+  transition:
+    border-color var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out),
+    background-color var(--duration-normal) var(--ease-out);
+}
+
+.dersha-input-icon-left {
+  padding-left: 3rem;
+}
+
+.dersha-input-icon-right {
+  padding-right: 3rem;
+}
+
+.dersha-input::placeholder {
+  color: var(--text-muted);
+}
+
+.dersha-input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--brand-primary-muted);
+  background: var(--surface-elevated);
+}
+
+.dersha-input-pill {
+  border-radius: var(--radius-pill);
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.dersha-input-wrap:focus-within {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--brand-primary-muted);
+}
+
+/* Buttons */
+.dersha-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  border-radius: var(--radius-lg);
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    background-color var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out),
+    opacity var(--duration-normal) var(--ease-out);
+  touch-action: manipulation;
+}
+
+.dersha-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.dersha-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.dersha-btn-primary {
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  box-shadow: var(--shadow-sm), 0 8px 20px rgba(5, 150, 105, 0.28);
+}
+
+.dersha-btn-primary:hover:not(:disabled) {
+  background: var(--brand-primary-hover);
+  box-shadow: var(--shadow-glow);
+}
+
+.dersha-btn-pill {
+  border-radius: var(--radius-pill);
+}
+
+.dersha-btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+}
+
+.dersha-btn-ghost:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.dersha-link {
+  color: var(--brand-primary-light);
+  font-weight: 600;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.dersha-link:hover {
+  color: var(--brand-accent);
+}
+
+/* Progress steps */
+.dersha-step-track {
+  position: relative;
+}
+
+.dersha-step-track::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 1.25rem;
+  height: 2px;
+  background: var(--border-subtle);
+  z-index: 0;
+}
+
+.dersha-step-progress {
+  position: absolute;
+  left: 0;
+  top: 1.25rem;
+  height: 2px;
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-primary-light));
+  z-index: 0;
+  transition: width var(--duration-slow) var(--ease-out);
+}
+
+.dersha-step-dot {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  transition:
+    background-color var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out);
+}
+
+.dersha-step-dot-active {
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  box-shadow: var(--shadow-glow);
+}
+
+.dersha-step-dot-complete {
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+}
+
+.dersha-step-dot-pending {
+  background: var(--surface-highlight);
+  border: 1px solid var(--border-default);
+  color: var(--text-muted);
+}
+
+.dersha-step-label-active {
+  color: var(--brand-primary-light);
+}
+
+.dersha-step-label-pending {
+  color: var(--text-muted);
+}
+
+/* Selection cards */
+.dersha-select-card {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--surface-overlay);
+  transition:
+    border-color var(--duration-normal) var(--ease-out),
+    background-color var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out);
+}
+
+.dersha-select-card:hover {
+  border-color: rgba(5, 150, 105, 0.4);
+}
+
+.dersha-select-card-active {
+  border: 2px solid var(--brand-primary);
+  background: var(--brand-primary-muted);
+  box-shadow: var(--shadow-glow);
+}
+
+/* Divider */
+.dersha-divider {
+  position: relative;
+  margin: 2rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dersha-divider::before {
+  content: "";
+  position: absolute;
+  inset: 50% 0 auto;
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+.dersha-divider span {
+  position: relative;
+  display: inline-block;
+  padding: 0 1rem;
+  background: var(--surface-elevated);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Info / alert box */
+.dersha-info-box {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  background: rgba(221, 112, 107, 0.08);
+  border: 1px solid rgba(221, 112, 107, 0.18);
+  color: #ffb3ae;
+}
+
+.dersha-trust-box {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
+  background: var(--surface-overlay);
+  border: 1px solid var(--border-subtle);
+}
+
+/* Ticker */
+.dersha-ticker {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 2rem;
+  background: var(--surface-base);
+  border-top: 1px solid var(--border-subtle);
+  overflow: hidden;
+  z-index: 50;
+}
+
+/* Entry animation */
+@keyframes dersha-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dersha-animate-in {
+  animation: dersha-fade-up var(--duration-slow) var(--ease-out) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dersha-animate-in,
+  .animate-pulse-slow,
+  .face-scan-overlay,
+  .shimmer,
+  .animate-marquee {
+    animation: none !important;
+  }
+
+  .dersha-btn:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .dersha-card,
+  .dersha-card-elevated,
+  .dersha-header,
+  .glass-card,
+  .glass-card-onboarding {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--surface-elevated);
+  }
+}
