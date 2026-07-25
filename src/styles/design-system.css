@@ -130,6 +130,18 @@
   line-height: 1.2;
 }
 
+.dersha-brand-logo {
+  display: block;
+  height: 2.875rem;
+  width: auto;
+}
+
+@media (max-width: 480px) {
+  .dersha-brand-logo {
+    height: 2.25rem;
+  }
+}
+
 /* Typography helpers */
 .dersha-heading {
   color: var(--text-primary);
@@ -268,33 +280,47 @@
 
 /* Progress steps */
 .dersha-step-track {
+  --step-dot-size: 2.5rem;
   position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
 .dersha-step-track::before {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 1.25rem;
+  left: calc(var(--step-dot-size) / 2);
+  right: calc(var(--step-dot-size) / 2);
+  top: calc(var(--step-dot-size) / 2);
   height: 2px;
+  transform: translateY(-50%);
   background: var(--border-subtle);
   z-index: 0;
 }
 
 .dersha-step-progress {
   position: absolute;
-  left: 0;
-  top: 1.25rem;
+  left: calc(var(--step-dot-size) / 2);
+  top: calc(var(--step-dot-size) / 2);
+  width: calc((100% - var(--step-dot-size)) * var(--step-progress, 0));
   height: 2px;
+  transform: translateY(-50%);
   background: linear-gradient(90deg, var(--brand-primary), var(--brand-primary-light));
   z-index: 0;
   transition: width var(--duration-slow) var(--ease-out);
 }
 
+.dersha-step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
 .dersha-step-dot {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: var(--step-dot-size);
+  height: var(--step-dot-size);
   border-radius: 50%;
   display: flex;
   align-items: center;

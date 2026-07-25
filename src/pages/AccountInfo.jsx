@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import OnboardingStepper from '../components/onboarding/OnboardingStepper'
 
 export default function AccountInfo() {
   const [showPassword, setShowPassword] = useState(false)
@@ -7,7 +8,7 @@ export default function AccountInfo() {
   return (
     <div className="page-shell min-h-screen flex flex-col items-center overflow-x-hidden font-body-md">
       <header className="dersha-header px-margin-mobile md:px-margin-desktop">
-        <div className="dersha-brand dersha-brand-display">ETHIOINVEST</div>
+        <img alt="DERSHA" className="dersha-brand-logo" src="/logo.svg" />
         <button
           aria-label="Help"
           className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-lg p-1"
@@ -19,30 +20,7 @@ export default function AccountInfo() {
 
       <main className="page-content flex-grow w-full max-w-container-max px-margin-mobile md:px-margin-desktop pt-32 pb-24 flex flex-col items-center">
         <div className="w-full max-w-2xl mb-12 dersha-animate-in">
-          <div className="dersha-step-track flex items-center justify-between">
-            <div className="dersha-step-progress w-1/3" />
-
-            <div className="flex flex-col items-center gap-3">
-              <div className="dersha-step-dot dersha-step-dot-active ring-4 ring-primary/20">
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">person</span>
-              </div>
-              <span className="font-label-caps text-label-caps dersha-step-label-active">Account Info</span>
-            </div>
-
-            <div className="flex flex-col items-center gap-3">
-              <div className="dersha-step-dot dersha-step-dot-pending">
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">verified_user</span>
-              </div>
-              <span className="font-label-caps text-label-caps dersha-step-label-pending">Identity</span>
-            </div>
-
-            <div className="flex flex-col items-center gap-3">
-              <div className="dersha-step-dot dersha-step-dot-pending">
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">account_balance_wallet</span>
-              </div>
-              <span className="font-label-caps text-label-caps dersha-step-label-pending">Bank/Wallet</span>
-            </div>
-          </div>
+          <OnboardingStepper currentStep={1} />
         </div>
 
         <section className="dersha-card-elevated w-full max-w-xl p-8 md:p-12 shadow-2xl relative overflow-hidden dersha-animate-in" style={{ animationDelay: '100ms' }}>

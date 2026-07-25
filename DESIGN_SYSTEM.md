@@ -67,6 +67,7 @@ All classes live in `src/styles/design-system.css`.
 | `.dersha-card-elevated` | Onboarding glass card |
 | `.dersha-header` | Fixed top navigation bar |
 | `.dersha-brand` | Brand name styling |
+| `.dersha-brand-logo` | Header logo image (`/logo.svg`) |
 | `.dersha-heading` | Page/section title |
 | `.dersha-subheading` | Supporting text |
 | `.dersha-eyebrow` | Uppercase label text |

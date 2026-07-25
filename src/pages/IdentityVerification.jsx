@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import OnboardingStepper from '../components/onboarding/OnboardingStepper'
 
 const FACE_SCAN_IMAGE =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuCfai2eWtVjbutkVi0r3o31PtfaUj8giK-nNQYe6xvo-thiVu9Pe8y8oGpitofjuuo025cJQ2E2-a3wFCBMRg_nBZcl1_IkAlT_jlJd9Lt7k_KcnpjWYXb7rInRWX_qbyg-LCfQPXe8wMvf2o0o2xZcfIFn3PSUgSvYMC-Wbudmgur_Kz_XwhDuzawMfTIARWwHep2gzbfio7AWDrtFziTNKnNfPVCKZiTIj46siI1whpUzv0YxSoEQ9CEJK7sDT0eRlYG4o4VzGMqQ'
@@ -20,7 +21,7 @@ export default function IdentityVerification() {
   return (
     <div className="page-shell min-h-screen selection:bg-primary/30 font-body-md">
       <header className="dersha-header px-margin-mobile md:px-margin-desktop">
-        <div className="dersha-brand font-headline-md text-headline-md">EthioWealth</div>
+        <img alt="DERSHA" className="dersha-brand-logo" src="/logo.svg" />
         <div className="hidden md:flex items-center gap-6">
           <span className="dersha-eyebrow flex items-center gap-2">
             <span className="material-symbols-outlined text-[18px]" aria-hidden="true">security</span>
@@ -39,30 +40,7 @@ export default function IdentityVerification() {
 
       <main className="page-content pt-24 pb-20 px-margin-mobile flex flex-col items-center justify-center min-h-screen">
         <div className="w-full max-w-2xl mb-10 dersha-animate-in">
-          <div className="dersha-step-track flex items-center justify-between">
-            <div className="dersha-step-progress w-1/2" style={{ top: '50%', transform: 'translateY(-50%)' }} />
-
-            <div className="flex flex-col items-center gap-3">
-              <div className="dersha-step-dot dersha-step-dot-complete">
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">check</span>
-              </div>
-              <span className="font-label-caps text-label-caps dersha-step-label-active hidden md:block">1. Account Info</span>
-            </div>
-
-            <div className="flex flex-col items-center gap-3">
-              <div className="dersha-step-dot dersha-step-dot-active border-2 border-primary emerald-glow-static">
-                2
-              </div>
-              <span className="font-label-caps text-label-caps text-on-surface font-bold hidden md:block">2. Identity Verification</span>
-            </div>
-
-            <div className="flex flex-col items-center gap-3">
-              <div className="dersha-step-dot dersha-step-dot-pending border-2 border-outline-variant">
-                3
-              </div>
-              <span className="font-label-caps text-label-caps dersha-step-label-pending hidden md:block">3. Link Bank/Wallet</span>
-            </div>
-          </div>
+          <OnboardingStepper currentStep={2} />
         </div>
 
         <div className="dersha-card w-full max-w-2xl p-8 md:p-12 shadow-2xl relative overflow-hidden dersha-animate-in" style={{ animationDelay: '100ms' }}>

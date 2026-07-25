@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import OnboardingStepper from '../components/onboarding/OnboardingStepper'
 
 const TICKER_ITEMS = [
   'CBE COMMODITIES +1.2%',
@@ -15,7 +16,7 @@ export default function LinkFunding() {
   return (
     <div className="page-shell min-h-screen flex flex-col overflow-x-hidden font-body-md">
       <header className="dersha-header px-margin-mobile md:px-margin-desktop">
-        <div className="dersha-brand dersha-brand-display">ETHIOINVEST</div>
+        <img alt="DERSHA" className="dersha-brand-logo" src="/logo.svg" />
         <div className="flex items-center gap-4">
           <button
             aria-label="Help"
@@ -35,31 +36,8 @@ export default function LinkFunding() {
       </header>
 
       <main className="page-content flex-grow pt-24 pb-32 px-margin-mobile md:px-margin-desktop flex flex-col items-center">
-        <div className="w-full max-w-3xl mb-12 dersha-animate-in">
-          <div className="dersha-step-track flex justify-between items-center">
-            <div className="dersha-step-progress w-full" style={{ top: '50%', transform: 'translateY(-50%)' }} />
-
-            <div className="flex flex-col items-center gap-2">
-              <div className="dersha-step-dot dersha-step-dot-complete">
-                <span className="material-symbols-outlined" aria-hidden="true">check</span>
-              </div>
-              <span className="font-label-caps text-label-caps text-on-surface">Account Info</span>
-            </div>
-
-            <div className="flex flex-col items-center gap-2">
-              <div className="dersha-step-dot dersha-step-dot-complete">
-                <span className="material-symbols-outlined" aria-hidden="true">check</span>
-              </div>
-              <span className="font-label-caps text-label-caps text-on-surface">Identity</span>
-            </div>
-
-            <div className="flex flex-col items-center gap-2">
-              <div className="dersha-step-dot dersha-step-dot-active ring-4 ring-primary/20">
-                <span className="font-bold">3</span>
-              </div>
-              <span className="font-label-caps text-label-caps dersha-step-label-active">Link Funding</span>
-            </div>
-          </div>
+        <div className="w-full max-w-2xl mb-12 dersha-animate-in">
+          <OnboardingStepper currentStep={3} />
         </div>
 
         <div className="dersha-card w-full max-w-2xl p-8 md:p-12 dersha-animate-in" style={{ animationDelay: '100ms' }}>
