@@ -1,19 +1,31 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
 const GOOGLE_ICON_URL =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuAJBfuP4UlhLHxCG_9U--YQIN6mbhnulT6E5JZXPkFDIQRFSAsgb0UqLVJtuwZpqcqhCUxPjh2GF-sphnd6Uj7qF4ydr3TydAAKRxLwLNSmVMkNrX7qYNYDU0Z13Zdq_3g-f4c98dT05GDOLwXUtixz6sFxVVWMjZbe5Q6IhWlwPK2uo6QNAavdciEz2otsYejxfncK1kCBpTnhqVaWyxniNJJkMAW7DbMrRSr0PNtXZK_NoJfVZQRC8K1ai_6RwFLzJ1x-c8cZZdFm'
 
 export default function Login() {
+  const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
   const [submitState, setSubmitState] = useState('idle')
+  const timers = useRef([])
+
+  useEffect(() => {
+    const pending = timers.current
+    return () => pending.forEach(clearTimeout)
+  }, [])
 
   const handleSubmit = (e) => {
     e.preventDefault()
     if (submitState !== 'idle') return
 
     setSubmitState('loading')
-    setTimeout(() => setSubmitState('success'), 1500)
+    timers.current.push(
+      setTimeout(() => {
+        setSubmitState('success')
+        timers.current.push(setTimeout(() => navigate('/marketplace'), 600))
+      }, 1500),
+    )
   }
 
   return (

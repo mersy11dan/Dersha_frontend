@@ -20,7 +20,7 @@ export default function ConfirmDeposit() {
   const [showModal, setShowModal] = useState(true)
 
   return (
-    <WalletLayout brandName="Adisa Capital" sidebarVariant="adisa">
+    <WalletLayout sidebarVariant="adisa">
       <WalletFundingView
         activeTab="deposit"
         onInitiate={() => setShowModal(true)}

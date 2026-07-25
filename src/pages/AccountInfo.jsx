@@ -6,7 +6,7 @@ export default function AccountInfo() {
   const [showPassword, setShowPassword] = useState(false)
 
   return (
-    <div className="page-shell min-h-screen flex flex-col items-center overflow-x-hidden font-body-md">
+    <div className="page-shell min-h-screen flex flex-col overflow-x-hidden font-body-md">
       <header className="dersha-header px-margin-mobile md:px-margin-desktop">
         <img alt="DERSHA" className="dersha-brand-logo" src="/logo.svg" />
         <button
@@ -18,7 +18,7 @@ export default function AccountInfo() {
         </button>
       </header>
 
-      <main className="page-content flex-grow w-full max-w-container-max px-margin-mobile md:px-margin-desktop pt-32 pb-24 flex flex-col items-center">
+      <main className="page-content flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-28 pb-24 flex flex-col items-center">
         <div className="w-full max-w-2xl mb-12 dersha-animate-in">
           <OnboardingStepper currentStep={1} />
         </div>

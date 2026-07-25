@@ -17,7 +17,7 @@ export default function WalletDeposit() {
   const navigate = useNavigate()
 
   return (
-    <WalletLayout brandName="Dirsha Exchange" sidebarVariant="exchange">
+    <WalletLayout sidebarVariant="exchange">
       <WalletFundingView
         activeTab="deposit"
         onInitiate={() => navigate('/wallet/confirm-deposit')}

@@ -35,7 +35,7 @@ export default function LinkFunding() {
         </div>
       </header>
 
-      <main className="page-content flex-grow pt-24 pb-32 px-margin-mobile md:px-margin-desktop flex flex-col items-center">
+      <main className="page-content flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-28 pb-32 flex flex-col items-center">
         <div className="w-full max-w-2xl mb-12 dersha-animate-in">
           <OnboardingStepper currentStep={3} />
         </div>
@@ -135,8 +135,8 @@ export default function LinkFunding() {
               <span className="material-symbols-outlined text-sm" aria-hidden="true">arrow_back</span>
               Back
             </Link>
-            <Link className="dersha-btn dersha-btn-primary px-8 py-4 text-lg w-full md:w-auto text-center" to="/dashboard">
-              Complete Onboarding &amp; Enter Dashboard
+            <Link className="dersha-btn dersha-btn-primary px-8 py-4 text-lg w-full md:w-auto text-center" to="/marketplace">
+              Complete Onboarding &amp; Enter Marketplace
             </Link>
           </div>
         </div>

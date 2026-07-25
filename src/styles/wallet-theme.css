@@ -144,8 +144,48 @@
   overflow: hidden;
 }
 
+.app-sidebar {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.market-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(188, 202, 192, 0.3);
+  border-radius: 24px;
+  overflow: hidden;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.market-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 105, 72, 0.35);
+  box-shadow: 0 16px 40px rgba(30, 41, 59, 0.1);
+}
+
+.market-filter-row {
+  scrollbar-width: none;
+}
+
+.market-filter-row::-webkit-scrollbar {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .wallet-btn-primary:active {
+    transform: none;
+  }
+
+  .app-sidebar,
+  .market-card {
+    transition: none;
+  }
+
+  .market-card:hover {
     transform: none;
   }
 }
@@ -153,6 +193,12 @@
 @media (prefers-reduced-transparency: reduce) {
   .wallet-glass-card,
   .wallet-modal-overlay {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .market-card {
+    background: var(--wallet-surface-lowest);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }

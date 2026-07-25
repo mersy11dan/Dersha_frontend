@@ -17,7 +17,7 @@ export default function WalletWithdrawal() {
   const navigate = useNavigate()
 
   return (
-    <WalletLayout brandName="Dirsha Exchange" sidebarVariant="exchange">
+    <WalletLayout sidebarVariant="exchange">
       <WalletFundingView
         activeTab="withdraw"
         onInitiate={() => navigate('/wallet/confirm-withdrawal')}

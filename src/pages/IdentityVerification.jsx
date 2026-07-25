@@ -19,7 +19,7 @@ export default function IdentityVerification() {
   const [nationalId, setNationalId] = useState('')
 
   return (
-    <div className="page-shell min-h-screen selection:bg-primary/30 font-body-md">
+    <div className="page-shell min-h-screen flex flex-col overflow-x-hidden selection:bg-primary/30 font-body-md">
       <header className="dersha-header px-margin-mobile md:px-margin-desktop">
         <img alt="DERSHA" className="dersha-brand-logo" src="/logo.svg" />
         <div className="hidden md:flex items-center gap-6">
@@ -38,8 +38,8 @@ export default function IdentityVerification() {
         </div>
       </header>
 
-      <main className="page-content pt-24 pb-20 px-margin-mobile flex flex-col items-center justify-center min-h-screen">
-        <div className="w-full max-w-2xl mb-10 dersha-animate-in">
+      <main className="page-content flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-28 pb-20 flex flex-col items-center">
+        <div className="w-full max-w-2xl mb-12 dersha-animate-in">
           <OnboardingStepper currentStep={2} />
         </div>
 
