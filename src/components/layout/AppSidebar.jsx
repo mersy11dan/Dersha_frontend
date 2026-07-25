@@ -1,19 +1,23 @@
-import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { PORTFOLIO_CHILDREN, PORTFOLIO_NAV, SIDEBAR_VARIANTS } from './navConfig'
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import {
+  PORTFOLIO_CHILDREN,
+  PORTFOLIO_NAV,
+  SIDEBAR_VARIANTS,
+} from "./navConfig";
 
 function SidebarLink({ item, isActive, nested = false, onNavigate }) {
   const shape = nested
-    ? 'block rounded-lg px-4 py-2 text-sm'
-    : 'flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium'
+    ? "block rounded-lg px-4 py-2 text-sm"
+    : "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium";
 
   const tone = isActive
-    ? 'bg-primary/10 font-bold text-primary'
-    : 'text-on-surface-variant hover:bg-surface-container-highest'
+    ? "bg-primary/10 font-bold text-primary"
+    : "text-on-surface-variant hover:bg-surface-container-highest";
 
   return (
     <Link
-      aria-current={isActive ? 'page' : undefined}
+      aria-current={isActive ? "page" : undefined}
       className={`${shape} ${tone} transition-colors duration-200`}
       onClick={onNavigate}
       to={item.href}
@@ -25,64 +29,68 @@ function SidebarLink({ item, isActive, nested = false, onNavigate }) {
       )}
       {item.label}
     </Link>
-  )
+  );
 }
 
 function PortfolioHealth() {
   return (
     <div className="wallet-panel p-4">
-      <p className="mb-2 text-xs font-semibold text-outline">Portfolio Health</p>
+      <p className="mb-2 text-xs font-semibold text-outline">
+        Portfolio Health
+      </p>
       <div className="h-1.5 w-full overflow-hidden rounded-full bg-outline-variant/30">
         <div className="h-full w-[85%] rounded-full bg-primary" />
       </div>
-      <p className="mt-2 text-right text-[11px] font-bold text-primary">Excellent</p>
+      <p className="mt-2 text-right text-[11px] font-bold text-primary">
+        Excellent
+      </p>
     </div>
-  )
+  );
 }
 
 function resolveActiveItem(activeItem, pathname) {
-  if (activeItem) return activeItem
+  if (activeItem) return activeItem;
 
-  if (pathname.startsWith('/wallet')) return 'wallet'
-  if (pathname.startsWith('/portfolio/assets')) return 'assets'
-  if (pathname.startsWith('/marketplace')) return 'marketplace'
-  if (pathname.startsWith('/custom-baskets')) return 'custom-baskets'
-  if (pathname.startsWith('/ai-advisor')) return 'ai-advisor'
+  if (pathname.startsWith("/wallet")) return "wallet";
+  if (pathname.startsWith("/portfolio/assets")) return "assets";
+  if (pathname.startsWith("/marketplace")) return "marketplace";
+  if (pathname.startsWith("/custom-baskets")) return "custom-baskets";
+  if (pathname.startsWith("/ai-advisor")) return "ai-advisor";
 
-  return null
+  return null;
 }
 
 export default function AppSidebar({
-  variant = 'exchange',
+  variant = "exchange",
   activeItem,
   open = false,
   onClose,
   portfolioExpanded: portfolioExpandedProp,
 }) {
-  const location = useLocation()
-  const config = SIDEBAR_VARIANTS[variant]
+  const location = useLocation();
+  const config = SIDEBAR_VARIANTS[variant];
 
-  const currentItem = resolveActiveItem(activeItem, location.pathname)
-  const isPortfolioChildActive = PORTFOLIO_CHILDREN.has(currentItem)
+  const currentItem = resolveActiveItem(activeItem, location.pathname);
+  const isPortfolioChildActive = PORTFOLIO_CHILDREN.has(currentItem);
 
   const [portfolioExpandedState, setPortfolioExpandedState] = useState(
     portfolioExpandedProp ?? isPortfolioChildActive,
-  )
+  );
 
-  const portfolioExpanded = portfolioExpandedProp ?? portfolioExpandedState
+  const portfolioExpanded = portfolioExpandedProp ?? portfolioExpandedState;
 
   const togglePortfolio = () => {
     if (portfolioExpandedProp === undefined) {
-      setPortfolioExpandedState((expanded) => !expanded)
+      setPortfolioExpandedState((expanded) => !expanded);
     }
-  }
+  };
 
   return (
     <aside
       aria-label="Main navigation"
       className={`app-sidebar fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-outline-variant/30 lg:translate-x-0 ${
-        open ? 'translate-x-0' : '-translate-x-full'
-      } ${variant === 'exchange' ? 'bg-surface-container-low' : 'bg-surface-container-lowest'}`}
+        open ? "translate-x-0" : "-translate-x-full"
+      } ${variant === "exchange" ? "bg-surface-container-low" : "bg-surface-container-lowest"}`}
     >
       <div className="flex h-20 shrink-0 items-center justify-between gap-2 px-6">
         <Link aria-label="DERSHA home" onClick={onClose} to="/marketplace">
@@ -100,7 +108,10 @@ export default function AppSidebar({
         </button>
       </div>
 
-      <nav aria-label="Primary" className="flex-1 space-y-1 overflow-y-auto px-4 py-4">
+      <nav
+        aria-label="Primary"
+        className="flex-1 space-y-1 overflow-y-auto px-4 py-4"
+      >
         {config.mainNav.map((item) => (
           <SidebarLink
             key={item.id}
@@ -116,8 +127,8 @@ export default function AppSidebar({
             aria-expanded={portfolioExpanded}
             className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-colors duration-200 ${
               isPortfolioChildActive
-                ? 'text-primary'
-                : 'text-on-surface-variant hover:bg-surface-container-highest'
+                ? "text-primary"
+                : "text-on-surface-variant hover:bg-surface-container-highest"
             }`}
             onClick={togglePortfolio}
             type="button"
@@ -131,7 +142,7 @@ export default function AppSidebar({
             <span
               aria-hidden="true"
               className={`material-symbols-outlined text-[18px] transition-transform duration-200 ${
-                portfolioExpanded ? 'rotate-180' : ''
+                portfolioExpanded ? "rotate-180" : ""
               }`}
             >
               expand_more
@@ -154,11 +165,11 @@ export default function AppSidebar({
         </div>
       </nav>
 
-      {config.footer === 'health' && (
+      {config.footer === "health" && (
         <div className="shrink-0 px-4 pb-6">
           <PortfolioHealth />
         </div>
       )}
     </aside>
-  )
+  );
 }
