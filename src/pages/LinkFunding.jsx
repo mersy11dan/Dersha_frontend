@@ -1,6 +1,8 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useMemo, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import OnboardingStepper from '../components/onboarding/OnboardingStepper'
+import { api } from '../lib/apiClient'
+import FormAlert, { FieldError } from '../components/common/FormAlert'
 
 const TICKER_ITEMS = [
   'CBE COMMODITIES +1.2%',
@@ -10,8 +12,73 @@ const TICKER_ITEMS = [
   'SOLAR ENERGY PROJECT FUNDED 100%',
 ]
 
+const PROVIDERS = {
+  bank: [
+    { code: 'CBEETET', name: 'Commercial Bank of Ethiopia (CBE)' },
+    { code: 'AWABETET', name: 'Awash Bank' },
+    { code: 'DASBETET', name: 'Dashen Bank' },
+    { code: 'BOAETET', name: 'Bank of Abyssinia' },
+    { code: 'WGBETET', name: 'Wegagen Bank' },
+  ],
+  mobile: [
+    { code: 'TELEBIRR', name: 'Telebirr' },
+    { code: 'CBE_BIRR', name: 'CBE Birr' },
+  ],
+}
+
 export default function LinkFunding() {
+  const navigate = useNavigate()
+
   const [fundingType, setFundingType] = useState('bank')
+  const [providerCode, setProviderCode] = useState('')
+  const [accountNumber, setAccountNumber] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState(null)
+  const [fieldErrors, setFieldErrors] = useState({})
+
+  const providers = useMemo(() => PROVIDERS[fundingType], [fundingType])
+
+  const chooseType = (type) => {
+    setFundingType(type)
+    setProviderCode('')
+    setFieldErrors({})
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    if (submitting) return
+
+    if (!providerCode) {
+      setFieldErrors({ provider: 'Choose your provider to continue.' })
+      return
+    }
+
+    setSubmitting(true)
+    setError(null)
+    setFieldErrors({})
+
+    try {
+      await api.post('/funding-sources', {
+        source_type: fundingType === 'bank' ? 'BANK' : 'MOBILE_MONEY',
+        provider_code: providerCode,
+        account_number: accountNumber.replace(/\s/g, ''),
+        make_primary: true,
+      })
+
+      navigate('/marketplace', { replace: true })
+    } catch (err) {
+      const mapped = err.fieldErrors ?? {}
+      setFieldErrors({
+        provider: mapped.provider_code,
+        accountNumber: mapped.account_number,
+      })
+      setError(err.message)
+      setSubmitting(false)
+    }
+  }
+
+  /** Linking is optional; deposits pick a channel at payment time regardless. */
+  const skip = () => navigate('/marketplace', { replace: true })
 
   return (
     <div className="page-shell min-h-screen flex flex-col overflow-x-hidden font-body-md">
@@ -50,12 +117,18 @@ export default function LinkFunding() {
             </p>
           </header>
 
+          {error && (
+            <div className="mb-8">
+              <FormAlert tone="error" message={error} />
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             <button
               className={`dersha-select-card flex flex-col items-start p-6 text-left group ${
                 fundingType === 'mobile' ? 'dersha-select-card-active' : ''
               }`}
-              onClick={() => setFundingType('mobile')}
+              onClick={() => chooseType('mobile')}
               type="button"
             >
               <div className="w-12 h-12 rounded-xl bg-surface-variant flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
@@ -71,7 +144,7 @@ export default function LinkFunding() {
               className={`dersha-select-card flex flex-col items-start p-6 text-left group ${
                 fundingType === 'bank' ? 'dersha-select-card-active' : ''
               }`}
-              onClick={() => setFundingType('bank')}
+              onClick={() => chooseType('bank')}
               type="button"
             >
               <div className="w-12 h-12 rounded-xl bg-surface-variant flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
@@ -84,7 +157,7 @@ export default function LinkFunding() {
             </button>
           </div>
 
-          <form className="space-y-6">
+          <form className="space-y-6" id="funding-form" onSubmit={handleSubmit} noValidate>
             <div>
               <label className="dersha-label mb-2 block" htmlFor="institution">
                 Select Financial Institution
@@ -94,18 +167,21 @@ export default function LinkFunding() {
                   className="dersha-input appearance-none pr-12 bg-surface-container-high"
                   id="institution"
                   name="institution"
+                  value={providerCode}
+                  onChange={(e) => setProviderCode(e.target.value)}
                 >
-                  <option disabled value="">Choose your provider</option>
-                  <option>Commercial Bank of Ethiopia (CBE)</option>
-                  <option>Awash Bank</option>
-                  <option>Dashen Bank</option>
-                  <option>Abyssinia Bank</option>
-                  <option>Telebirr</option>
+                  <option value="">Choose your provider</option>
+                  {providers.map((provider) => (
+                    <option key={provider.code} value={provider.code}>
+                      {provider.name}
+                    </option>
+                  ))}
                 </select>
                 <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant" aria-hidden="true">
                   expand_more
                 </span>
               </div>
+              <FieldError message={fieldErrors.provider} />
             </div>
 
             <div>
@@ -119,7 +195,10 @@ export default function LinkFunding() {
                 name="accountNumber"
                 placeholder="e.g. 1000123456789 or 0911…"
                 type="text"
+                value={accountNumber}
+                onChange={(e) => setAccountNumber(e.target.value)}
               />
+              <FieldError message={fieldErrors.accountNumber} />
             </div>
 
             <div className="dersha-info-box">
@@ -135,9 +214,24 @@ export default function LinkFunding() {
               <span className="material-symbols-outlined text-sm" aria-hidden="true">arrow_back</span>
               Back
             </Link>
-            <Link className="dersha-btn dersha-btn-primary px-8 py-4 text-lg w-full md:w-auto text-center" to="/marketplace">
-              Complete Onboarding &amp; Enter Marketplace
-            </Link>
+
+            <div className="flex flex-col-reverse md:flex-row items-center gap-4 w-full md:w-auto">
+              <button
+                className="text-outline hover:text-on-surface transition-colors font-semibold"
+                onClick={skip}
+                type="button"
+              >
+                Skip for now
+              </button>
+              <button
+                className="dersha-btn dersha-btn-primary px-8 py-4 text-lg w-full md:w-auto text-center"
+                disabled={submitting}
+                form="funding-form"
+                type="submit"
+              >
+                {submitting ? 'Linking…' : 'Complete Onboarding & Enter Marketplace'}
+              </button>
+            </div>
           </div>
         </div>
 

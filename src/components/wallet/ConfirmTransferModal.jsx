@@ -1,6 +1,13 @@
 import { useEffect, useRef } from 'react'
 
-export default function ConfirmTransferModal({ type, account, amount, onClose, onConfirm }) {
+export default function ConfirmTransferModal({
+  type,
+  account,
+  amount,
+  onClose,
+  onConfirm,
+  submitting = false,
+}) {
   const dialogRef = useRef(null)
   const closeRef = useRef(null)
   const isDeposit = type === 'deposit'
@@ -88,10 +95,24 @@ export default function ConfirmTransferModal({ type, account, amount, onClose, o
           </div>
 
           <div className="flex flex-col gap-3 pt-2">
-            <button className="wallet-btn-primary" onClick={onConfirm} type="button">
-              {isDeposit ? 'Confirm & Deposit' : 'Confirm & Withdraw'}
+            <button
+              className="wallet-btn-primary"
+              disabled={submitting}
+              onClick={onConfirm}
+              type="button"
+            >
+              {submitting
+                ? 'Submitting…'
+                : isDeposit
+                  ? 'Confirm & Deposit'
+                  : 'Confirm & Withdraw'}
             </button>
-            <button className="wallet-btn-ghost" onClick={onClose} type="button">
+            <button
+              className="wallet-btn-ghost"
+              disabled={submitting}
+              onClick={onClose}
+              type="button"
+            >
               Cancel
             </button>
           </div>

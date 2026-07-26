@@ -1,31 +1,60 @@
-import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import FormAlert, { FieldError } from "../components/common/FormAlert";
 
 const GOOGLE_ICON_URL =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuAJBfuP4UlhLHxCG_9U--YQIN6mbhnulT6E5JZXPkFDIQRFSAsgb0UqLVJtuwZpqcqhCUxPjh2GF-sphnd6Uj7qF4ydr3TydAAKRxLwLNSmVMkNrX7qYNYDU0Z13Zdq_3g-f4c98dT05GDOLwXUtixz6sFxVVWMjZbe5Q6IhWlwPK2uo6QNAavdciEz2otsYejxfncK1kCBpTnhqVaWyxniNJJkMAW7DbMrRSr0PNtXZK_NoJfVZQRC8K1ai_6RwFLzJ1x-c8cZZdFm";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
+
+  const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [submitState, setSubmitState] = useState("idle");
-  const timers = useRef([]);
+  const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
 
-  useEffect(() => {
-    const pending = timers.current;
-    return () => pending.forEach(clearTimeout);
-  }, []);
+  const update = (field) => (event) => {
+    setForm((prev) => ({ ...prev, [field]: event.target.value }));
+    setFieldErrors((prev) => ({ ...prev, [field]: undefined }));
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     if (submitState !== "idle") return;
 
     setSubmitState("loading");
-    timers.current.push(
-      setTimeout(() => {
-        setSubmitState("success");
-        timers.current.push(setTimeout(() => navigate("/marketplace"), 600));
-      }, 1500),
-    );
+    setError(null);
+    setFieldErrors({});
+
+    try {
+      const result = await login({
+        email_address: form.email.trim(),
+        password_plain: form.password,
+      });
+
+      setSubmitState("success");
+
+      // An unverified account is sent back into onboarding; everyone else goes
+      // to wherever the guard bounced them from, or the marketplace.
+      const destination =
+        result.nextStage === "IDENTITY_VERIFICATION"
+          ? "/identity-verification"
+          : (location.state?.from ?? "/marketplace");
+
+      navigate(destination, { replace: true });
+    } catch (err) {
+      setSubmitState("idle");
+      const mapped = err.fieldErrors ?? {};
+      setFieldErrors({
+        email: mapped.email_address,
+        password: mapped.password_plain,
+      });
+      setError(err.message);
+    }
   };
 
   return (
@@ -40,7 +69,7 @@ export default function Login() {
 
       <main className="page-content w-full max-w-[480px] px-margin-mobile md:px-0">
         <div className="text-center mb-10 dersha-animate-in">
-          <div className="flex items-center justify-center gap-3 mb-2">
+          <div className="flex items-center justify-center gap-3 mb-2 mt-5">
             <div className="w-11 h-11 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/30">
               <span
                 className="material-symbols-outlined text-white font-bold"
@@ -50,7 +79,7 @@ export default function Login() {
               </span>
             </div>
             <h1 className="font-headline-md text-headline-md font-bold tracking-tight text-primary">
-              EQUITYBLOCK
+              Dersha Digital Exchange
             </h1>
           </div>
           <p className="dersha-eyebrow tracking-widest">
@@ -71,7 +100,9 @@ export default function Login() {
             </p>
           </header>
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={handleSubmit} noValidate>
+            {error && <FormAlert tone="error" message={error} />}
+
             <div className="space-y-2">
               <label className="dersha-label ml-1" htmlFor="email">
                 Email Address
@@ -94,8 +125,11 @@ export default function Login() {
                   required
                   spellCheck={false}
                   type="email"
+                  value={form.email}
+                  onChange={update("email")}
                 />
               </div>
+              <FieldError message={fieldErrors.email} />
             </div>
 
             <div className="space-y-2">
@@ -124,6 +158,8 @@ export default function Login() {
                   placeholder="••••••••"
                   required
                   type={showPassword ? "text" : "password"}
+                  value={form.password}
+                  onChange={update("password")}
                 />
                 <button
                   aria-label={showPassword ? "Hide password" : "Show password"}
@@ -139,6 +175,7 @@ export default function Login() {
                   </span>
                 </button>
               </div>
+              <FieldError message={fieldErrors.password} />
             </div>
 
             <div className="flex items-center">
@@ -229,6 +266,8 @@ export default function Login() {
           <div className="grid grid-cols-2 gap-4">
             <button
               className="dersha-btn dersha-btn-ghost dersha-btn-pill py-3"
+              disabled
+              title="Social sign-in is not enabled yet"
               type="button"
             >
               <img
@@ -242,6 +281,8 @@ export default function Login() {
             </button>
             <button
               className="dersha-btn dersha-btn-ghost dersha-btn-pill py-3"
+              disabled
+              title="Social sign-in is not enabled yet"
               type="button"
             >
               <span

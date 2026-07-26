@@ -32,22 +32,6 @@ function SidebarLink({ item, isActive, nested = false, onNavigate }) {
   );
 }
 
-function PortfolioHealth() {
-  return (
-    <div className="wallet-panel p-4">
-      <p className="mb-2 text-xs font-semibold text-outline">
-        Portfolio Health
-      </p>
-      <div className="h-1.5 w-full overflow-hidden rounded-full bg-outline-variant/30">
-        <div className="h-full w-[85%] rounded-full bg-primary" />
-      </div>
-      <p className="mt-2 text-right text-[11px] font-bold text-primary">
-        Excellent
-      </p>
-    </div>
-  );
-}
-
 function resolveActiveItem(activeItem, pathname) {
   if (activeItem) return activeItem;
 
@@ -55,7 +39,6 @@ function resolveActiveItem(activeItem, pathname) {
   if (pathname.startsWith("/portfolio/assets")) return "assets";
   if (pathname.startsWith("/marketplace")) return "marketplace";
   if (pathname.startsWith("/custom-baskets")) return "custom-baskets";
-  if (pathname.startsWith("/ai-advisor")) return "ai-advisor";
 
   return null;
 }
@@ -164,12 +147,6 @@ export default function AppSidebar({
           )}
         </div>
       </nav>
-
-      {config.footer === "health" && (
-        <div className="shrink-0 px-4 pb-6">
-          <PortfolioHealth />
-        </div>
-      )}
     </aside>
   );
 }

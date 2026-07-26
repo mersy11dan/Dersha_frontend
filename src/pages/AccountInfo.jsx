@@ -1,9 +1,70 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import OnboardingStepper from '../components/onboarding/OnboardingStepper'
+import { useAuth } from '../context/AuthContext'
+import FormAlert, { FieldError } from '../components/common/FormAlert'
+
+const COUNTRY_CODES = ['+251']
 
 export default function AccountInfo() {
+  const navigate = useNavigate()
+  const { register } = useAuth()
+
   const [showPassword, setShowPassword] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState(null)
+  const [fieldErrors, setFieldErrors] = useState({})
+  const [form, setForm] = useState({
+    fullName: '',
+    email: '',
+    countryCode: '+251',
+    phone: '',
+    password: '',
+    isDiaspora: false,
+  })
+
+  const update = (field) => (event) => {
+    const value =
+      event.target.type === 'checkbox' ? event.target.checked : event.target.value
+    setForm((prev) => ({ ...prev, [field]: value }))
+    setFieldErrors((prev) => ({ ...prev, [field]: undefined }))
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    if (submitting) return
+
+    setSubmitting(true)
+    setError(null)
+    setFieldErrors({})
+
+    // The API expects a single E.164 string; the UI collects the code and the
+    // subscriber number separately.
+    const localNumber = form.phone.replace(/\D/g, '')
+    const phoneNumber = `${form.countryCode}${localNumber}`
+
+    try {
+      await register({
+        full_name_raw: form.fullName.trim(),
+        email_address: form.email.trim(),
+        phone_number_eth: phoneNumber,
+        password_plain: form.password,
+        is_diaspora_account: form.isDiaspora,
+      })
+
+      navigate('/identity-verification', { replace: true })
+    } catch (err) {
+      const mapped = err.fieldErrors ?? {}
+      setFieldErrors({
+        fullName: mapped.full_name_raw,
+        email: mapped.email_address,
+        phone: mapped.phone_number_eth,
+        password: mapped.password_plain,
+      })
+      setError(err.message)
+      setSubmitting(false)
+    }
+  }
 
   return (
     <div className="page-shell min-h-screen flex flex-col overflow-x-hidden font-body-md">
@@ -35,7 +96,9 @@ export default function AccountInfo() {
             </p>
           </div>
 
-          <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+          <form className="space-y-6" onSubmit={handleSubmit} noValidate>
+            {error && <FormAlert tone="error" message={error} />}
+
             <div className="flex flex-col gap-2">
               <label className="dersha-label ml-1" htmlFor="full-name">Full Name</label>
               <div className="emerald-glow rounded-xl bg-surface-container-low transition-all duration-200">
@@ -46,8 +109,11 @@ export default function AccountInfo() {
                   name="fullName"
                   placeholder="Abebe Bikila"
                   type="text"
+                  value={form.fullName}
+                  onChange={update('fullName')}
                 />
               </div>
+              <FieldError message={fieldErrors.fullName} />
             </div>
 
             <div className="flex flex-col gap-2">
@@ -61,8 +127,11 @@ export default function AccountInfo() {
                   placeholder="name@domain.com…"
                   spellCheck={false}
                   type="email"
+                  value={form.email}
+                  onChange={update('email')}
                 />
               </div>
+              <FieldError message={fieldErrors.email} />
             </div>
 
             <div className="flex flex-col gap-2">
@@ -73,10 +142,12 @@ export default function AccountInfo() {
                     aria-label="Country code"
                     className="w-full bg-transparent border-0 rounded-xl py-4 pl-4 pr-8 text-on-surface focus:ring-0 appearance-none"
                     name="countryCode"
+                    value={form.countryCode}
+                    onChange={update('countryCode')}
                   >
-                    <option>+251</option>
-                    <option>+1</option>
-                    <option>+44</option>
+                    {COUNTRY_CODES.map((code) => (
+                      <option key={code} value={code}>{code}</option>
+                    ))}
                   </select>
                   <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" aria-hidden="true">
                     expand_more
@@ -88,12 +159,19 @@ export default function AccountInfo() {
                     className="dersha-input border-0 bg-transparent"
                     id="phone"
                     inputMode="tel"
+                    maxLength={11}
                     name="phone"
                     placeholder="911 234 567"
                     type="tel"
+                    value={form.phone}
+                    onChange={update('phone')}
                   />
                 </div>
               </div>
+              <p className="text-[11px] text-outline ml-1">
+                Ethiopian mobile number without the leading zero, for example 911234567.
+              </p>
+              <FieldError message={fieldErrors.phone} />
             </div>
 
             <div className="flex flex-col gap-2">
@@ -106,6 +184,8 @@ export default function AccountInfo() {
                   name="password"
                   placeholder="••••••••"
                   type={showPassword ? 'text' : 'password'}
+                  value={form.password}
+                  onChange={update('password')}
                 />
                 <button
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
@@ -118,15 +198,30 @@ export default function AccountInfo() {
                   </span>
                 </button>
               </div>
-              <p className="text-[11px] text-outline ml-1">Minimum 8 characters with at least one number and symbol.</p>
+              <p className="text-[11px] text-outline ml-1">Minimum 8 characters.</p>
+              <FieldError message={fieldErrors.password} />
             </div>
 
-            <Link
-              className="dersha-btn dersha-btn-primary w-full py-5 text-headline-md mt-4 text-center"
-              to="/identity-verification"
+            <label className="flex items-start gap-3 cursor-pointer group">
+              <input
+                checked={form.isDiaspora}
+                className="mt-1 h-4 w-4 accent-primary"
+                name="isDiaspora"
+                onChange={update('isDiaspora')}
+                type="checkbox"
+              />
+              <span className="text-sm text-on-surface-variant group-hover:text-on-surface transition-colors">
+                I am investing from abroad (diaspora account)
+              </span>
+            </label>
+
+            <button
+              className="dersha-btn dersha-btn-primary w-full py-5 text-headline-md mt-4"
+              disabled={submitting}
+              type="submit"
             >
-              Next: Verify Identity
-            </Link>
+              {submitting ? 'Creating your account…' : 'Next: Verify Identity'}
+            </button>
           </form>
 
           <div className="mt-8 pt-8 border-t border-outline-variant/20 text-center">

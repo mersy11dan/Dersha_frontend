@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import OnboardingStepper from '../components/onboarding/OnboardingStepper'
-
-const FACE_SCAN_IMAGE =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuCfai2eWtVjbutkVi0r3o31PtfaUj8giK-nNQYe6xvo-thiVu9Pe8y8oGpitofjuuo025cJQ2E2-a3wFCBMRg_nBZcl1_IkAlT_jlJd9Lt7k_KcnpjWYXb7rInRWX_qbyg-LCfQPXe8wMvf2o0o2xZcfIFn3PSUgSvYMC-Wbudmgur_Kz_XwhDuzawMfTIARWwHep2gzbfio7AWDrtFziTNKnNfPVCKZiTIj46siI1whpUzv0YxSoEQ9CEJK7sDT0eRlYG4o4VzGMqQ'
+import { useAuth } from '../context/AuthContext'
+import { useCameraCapture } from '../hooks/useCameraCapture'
+import { kycService } from '../lib/services'
+import FormAlert, { FieldError } from '../components/common/FormAlert'
 
 function formatNationalId(value) {
   const digits = value.replace(/\D/g, '').slice(0, 12)
@@ -16,7 +17,47 @@ function formatNationalId(value) {
 }
 
 export default function IdentityVerification() {
+  const navigate = useNavigate()
+  const { applySession, user } = useAuth()
+  const camera = useCameraCapture()
+
   const [nationalId, setNationalId] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState(null)
+  const [fieldErrors, setFieldErrors] = useState({})
+
+  const idIsComplete = nationalId.replace(/\D/g, '').length === 12
+  const canSubmit = idIsComplete && Boolean(camera.capture) && !submitting
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    if (!canSubmit) return
+
+    setSubmitting(true)
+    setError(null)
+    setFieldErrors({})
+
+    try {
+      const result = await kycService.verifyFayda({
+        fayda_id_number: nationalId,
+        live_selfie_base64: camera.capture,
+        liveness_passed: true,
+      })
+
+      // The account status inside the old token is stale now that the account
+      // is verified, so the server issues a fresh one.
+      applySession(result.token, result.user)
+      navigate('/link-funding', { replace: true })
+    } catch (err) {
+      const mapped = err.fieldErrors ?? {}
+      setFieldErrors({
+        nationalId: mapped.fayda_id_number,
+        selfie: mapped.live_selfie_base64 ?? mapped.liveness_passed,
+      })
+      setError(err.message)
+      setSubmitting(false)
+    }
+  }
 
   return (
     <div className="page-shell min-h-screen flex flex-col overflow-x-hidden selection:bg-primary/30 font-body-md">
@@ -43,7 +84,12 @@ export default function IdentityVerification() {
           <OnboardingStepper currentStep={2} />
         </div>
 
-        <div className="dersha-card w-full max-w-2xl p-8 md:p-12 shadow-2xl relative overflow-hidden dersha-animate-in" style={{ animationDelay: '100ms' }}>
+        <form
+          className="dersha-card w-full max-w-2xl p-8 md:p-12 shadow-2xl relative overflow-hidden dersha-animate-in"
+          onSubmit={handleSubmit}
+          style={{ animationDelay: '100ms' }}
+          noValidate
+        >
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/8 blur-[100px] rounded-full" />
           <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-secondary/8 blur-[100px] rounded-full" />
 
@@ -57,7 +103,18 @@ export default function IdentityVerification() {
                 <span className="text-primary font-semibold">Capital Market Authority (ECMA)</span>{' '}
                 regulations, please link your National ID to unlock instant deposits and marketplace access.
               </p>
+              {user && (
+                <p className="mt-3 text-sm text-outline">
+                  Verifying as <span className="text-on-surface font-semibold">{user.full_name_raw}</span>
+                </p>
+              )}
             </div>
+
+            {error && (
+              <div className="mb-8">
+                <FormAlert tone="error" message={error} />
+              </div>
+            )}
 
             <div className="mb-10">
               <label className="dersha-label mb-2 block tracking-widest" htmlFor="national-id">
@@ -78,6 +135,7 @@ export default function IdentityVerification() {
                   fingerprint
                 </span>
               </div>
+              <FieldError message={fieldErrors.nationalId} />
             </div>
 
             <div className="mb-10">
@@ -85,26 +143,115 @@ export default function IdentityVerification() {
               <div className="bg-surface-container-highest/50 border border-outline-variant/50 rounded-xl p-6 flex flex-col items-center">
                 <div className="w-full flex items-center justify-between mb-6">
                   <span className="dersha-eyebrow text-primary flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                    Live Selfie Webcam
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        camera.status === 'live' ? 'bg-primary animate-pulse' : 'bg-outline'
+                      }`}
+                    />
+                    {camera.status === 'live'
+                      ? 'Live Selfie Webcam'
+                      : camera.status === 'captured'
+                        ? 'Capture Ready'
+                        : 'Camera Idle'}
                   </span>
-                  <span className="text-on-surface-variant text-[12px] font-medium">Align face within frame</span>
+                  <span className="text-on-surface-variant text-[12px] font-medium">
+                    Align face within frame
+                  </span>
                 </div>
 
                 <div className="relative w-48 h-48 md:w-56 md:h-56">
                   <div className="absolute inset-0 face-scan-overlay z-20" />
                   <div className="absolute inset-0 rounded-full overflow-hidden bg-surface-container-lowest">
-                    <div
-                      className="w-full h-full bg-cover bg-center opacity-70 grayscale contrast-125"
-                      style={{ backgroundImage: `url('${FACE_SCAN_IMAGE}')` }}
-                    />
-                    <div className="shimmer absolute inset-0 z-10" />
+                    {camera.capture ? (
+                      <img
+                        alt="Your captured selfie"
+                        className="w-full h-full object-cover"
+                        src={camera.capture}
+                      />
+                    ) : (
+                      <video
+                        aria-label="Live camera preview"
+                        className="w-full h-full object-cover"
+                        muted
+                        playsInline
+                        ref={camera.videoRef}
+                      />
+                    )}
+                    {camera.status === 'live' && <div className="shimmer absolute inset-0 z-10" />}
                   </div>
                 </div>
+
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                  {camera.status === 'idle' && (
+                    <button
+                      className="dersha-btn dersha-btn-primary px-6 py-3"
+                      onClick={camera.start}
+                      type="button"
+                    >
+                      <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+                        photo_camera
+                      </span>
+                      Start Camera
+                    </button>
+                  )}
+
+                  {camera.status === 'starting' && (
+                    <p className="text-sm text-on-surface-variant">Requesting camera access…</p>
+                  )}
+
+                  {camera.status === 'live' && (
+                    <button
+                      className="dersha-btn dersha-btn-primary px-6 py-3"
+                      onClick={camera.takePhoto}
+                      type="button"
+                    >
+                      <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+                        center_focus_strong
+                      </span>
+                      Capture Photo
+                    </button>
+                  )}
+
+                  {camera.status === 'captured' && (
+                    <button
+                      className="dersha-btn dersha-btn-ghost px-6 py-3"
+                      onClick={camera.reset}
+                      type="button"
+                    >
+                      <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+                        refresh
+                      </span>
+                      Retake
+                    </button>
+                  )}
+
+                  {(camera.status === 'denied' || camera.status === 'idle') && (
+                    <button
+                      className="dersha-btn dersha-btn-ghost px-6 py-3"
+                      onClick={camera.useSimulatedCapture}
+                      type="button"
+                    >
+                      Use simulated capture
+                    </button>
+                  )}
+                </div>
+
+                {camera.error && (
+                  <p className="mt-4 max-w-sm text-center text-[12px] text-on-surface-variant">
+                    {camera.error}
+                  </p>
+                )}
+
+                {camera.usedFallback && (
+                  <p className="mt-4 max-w-sm text-center text-[12px] text-secondary">
+                    Using a simulated capture. Real biometric matching requires a live camera.
+                  </p>
+                )}
 
                 <p className="mt-6 dersha-eyebrow text-[11px] text-outline text-center max-w-sm">
                   By clicking continue, you agree to AI biometric matching with the National ID database.
                 </p>
+                <FieldError message={fieldErrors.selfie} />
               </div>
             </div>
 
@@ -123,33 +270,32 @@ export default function IdentityVerification() {
                 <span className="material-symbols-outlined text-sm" aria-hidden="true">arrow_back</span>
                 Back
               </Link>
-              <Link className="dersha-btn dersha-btn-primary w-full md:min-w-[240px] px-8 py-4" to="/link-funding">
-                Verify &amp; Continue
-                <span className="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-              </Link>
+              <button
+                className="dersha-btn dersha-btn-primary w-full md:min-w-[240px] px-8 py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!canSubmit}
+                type="submit"
+              >
+                {submitting ? 'Verifying with Fayda…' : 'Verify & Continue'}
+                {!submitting && (
+                  <span className="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+                )}
+              </button>
             </div>
+
+            {!canSubmit && !submitting && (
+              <p className="mt-4 text-center text-[12px] text-outline">
+                {!idIsComplete
+                  ? 'Enter all 12 digits of your Fayda ID to continue.'
+                  : 'Capture a photo to continue.'}
+              </p>
+            )}
           </div>
-        </div>
+        </form>
 
         <p className="mt-12 text-on-surface-variant dersha-eyebrow opacity-50 text-center">
           Fractional Wealth Ltd. · Authorized by ECMA · Data Protection Act Compliant
         </p>
       </main>
-
-      <nav className="md:hidden fixed bottom-0 w-full bg-surface-container-lowest/90 backdrop-blur-md border-t border-outline-variant/30 flex justify-around p-2 z-50 rounded-t-xl shadow-lg">
-        <div className="flex flex-col items-center justify-center text-on-surface-variant p-2">
-          <span className="material-symbols-outlined" aria-hidden="true">support_agent</span>
-          <span className="font-label-caps text-[10px]">Support</span>
-        </div>
-        <div className="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-2xl p-2 px-4">
-          <span className="material-symbols-outlined" aria-hidden="true">lock</span>
-          <span className="font-label-caps text-[10px]">Security</span>
-        </div>
-        <div className="flex flex-col items-center justify-center text-on-surface-variant p-2">
-          <span className="material-symbols-outlined" aria-hidden="true">close</span>
-          <span className="font-label-caps text-[10px]">Exit</span>
-        </div>
-      </nav>
     </div>
   )
 }
