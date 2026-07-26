@@ -82,9 +82,9 @@ export default function Login() {
               Dersha Digital Exchange
             </h1>
           </div>
-          <p className="dersha-eyebrow tracking-widest">
+          {/* <p className="dersha-eyebrow tracking-widest">
             Institutional Grade Assets
-          </p>
+          </p> */}
         </div>
 
         <div

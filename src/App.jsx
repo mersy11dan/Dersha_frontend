@@ -13,6 +13,7 @@ import BasketDetail from "./pages/BasketDetail";
 import WalletDeposit from "./pages/WalletDeposit";
 import WalletWithdrawal from "./pages/WalletWithdrawal";
 import Assets from "./pages/Assets";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Public */}
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/account-info" element={<AccountInfo />} />
 
@@ -109,7 +110,10 @@ function App() {
             }
           />
 
-          <Route path="/dashboard" element={<Navigate to="/marketplace" replace />} />
+          <Route
+            path="/dashboard"
+            element={<Navigate to="/marketplace" replace />}
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
