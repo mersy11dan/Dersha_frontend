@@ -13,7 +13,7 @@ function initialsOf(name) {
 
 export default function AppHeader({ onMenuClick, isCollapsed, onToggleCollapse }) {
   const { user, logout } = useAuth()
-  const { isDark, isPearl, toggleTheme } = useTheme()
+  const { isDark, toggleTheme } = useTheme()
   const name = user?.full_name_raw ?? 'David Owner'
   const status = user?.account_status
     ? titleCase(user.account_status.replace(/_/g, ' '))
@@ -67,27 +67,19 @@ export default function AppHeader({ onMenuClick, isCollapsed, onToggleCollapse }
       </div>
 
       <div className="flex shrink-0 items-center gap-2.5">
-        {/* Theme switch button: 3-state cycle dark → light → pearl → dark */}
+        {/* Theme switch button: Obsidian Dark ↔ Graphite Light */}
         <button
           onClick={toggleTheme}
-          aria-label={
-            isDark ? 'Switch to Graphite Light' : isPearl ? 'Switch to Dark Mode' : 'Switch to Pearl Light'
-          }
-          title={
-            isDark ? 'Switch to Graphite Light' : isPearl ? 'Switch to Dark Mode' : 'Switch to Pearl Light'
-          }
-          className={`h-10 px-3 rounded-full glass-card flex items-center gap-1.5 hover:scale-105 transition-all shadow-md shrink-0 ${
-            isPearl
-              ? 'text-[#2563eb] border border-[#2563eb]/30'
-              : 'text-primary-fixed'
-          }`}
+          aria-label={isDark ? "Switch to Graphite Light Mode" : "Switch to Obsidian Dark Mode"}
+          title={isDark ? "Switch to Graphite Light Mode" : "Switch to Obsidian Dark Mode"}
+          className="h-10 px-3.5 rounded-full glass-card flex items-center gap-2 text-primary-fixed hover:bg-white/10 hover:scale-105 transition-all shadow-md shrink-0 border border-white/10"
           type="button"
         >
-          <span className="material-symbols-outlined text-[20px]">
-            {isDark ? 'light_mode' : isPearl ? 'dark_mode' : 'wb_sunny'}
+          <span className="material-symbols-outlined text-[18px]">
+            {isDark ? 'light_mode' : 'dark_mode'}
           </span>
-          <span className={`font-label-sm text-[9px] font-bold uppercase tracking-wider hidden sm:inline ${isPearl ? 'text-[#2563eb]' : 'text-primary-fixed'}`}>
-            {isDark ? 'GRAPHITE' : isPearl ? 'OBSIDIAN' : 'PEARL'}
+          <span className="font-label-sm text-[10px] font-bold uppercase tracking-wider text-primary-fixed hidden sm:inline">
+            {isDark ? 'GRAPHITE' : 'OBSIDIAN'}
           </span>
         </button>
 
