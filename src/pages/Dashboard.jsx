@@ -7,6 +7,18 @@ export default function Dashboard() {
   const [receiveAmount, setReceiveAmount] = useState('342.43')
   const [sendAsset, setSendAsset] = useState('SOL')
   const [receiveAsset, setReceiveAsset] = useState('USD')
+  const [chartHover, setChartHover] = useState(null)
+
+  const handleChartPointerMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX
+    const relX = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width))
+    const svgX = relX * 400
+    const svgY = 130 + Math.sin(relX * Math.PI * 3) * 40
+    const pct = '+' + (0.15 + Math.sin(relX * Math.PI * 2) * 1.8).toFixed(2) + '%'
+    const dateStr = ['May 12', 'May 15', 'May 18', 'May 21', 'May 24', 'May 28'][Math.floor(relX * 5.99)] || 'May 25'
+    setChartHover({ x: svgX, y: svgY, relX, pct, dateStr })
+  }
 
   const historyRows = [
     {
@@ -124,7 +136,13 @@ export default function Dashboard() {
           </div>
 
           {/* Overview Chart Card */}
-          <div className="col-span-12 lg:col-span-4 glass-card rounded-[24px] p-6 relative overflow-hidden h-[280px]">
+          <div
+            className="col-span-12 lg:col-span-4 glass-card rounded-[24px] p-6 relative overflow-hidden h-[280px] cursor-crosshair select-none"
+            onMouseMove={handleChartPointerMove}
+            onTouchMove={handleChartPointerMove}
+            onMouseLeave={() => setChartHover(null)}
+            onTouchEnd={() => setChartHover(null)}
+          >
             <div className="flex items-center gap-2 mb-4 z-10 relative">
               <h2 className="font-title-md text-[16px] text-white font-medium">Overview</h2>
               <span className="material-symbols-outlined text-white/50 text-[16px]">info</span>
@@ -150,27 +168,34 @@ export default function Dashboard() {
                     <stop offset="100%" style={{ stopColor: '#ffeb3b', stopOpacity: 0 }} />
                   </linearGradient>
                 </defs>
+
+                {/* Rendered ONLY on touch/hover */}
+                {chartHover && (
+                  <>
+                    <line x1={chartHover.x} y1="0" x2={chartHover.x} y2="200" stroke="rgba(255,255,255,0.4)" strokeDasharray="4 4" />
+                    <circle cx={chartHover.x} cy={chartHover.y} r="5" fill="#ffeb3b" stroke="#ffffff" strokeWidth="2" className="chart-glow" />
+                  </>
+                )}
               </svg>
             </div>
-            {/* Y Axis Labels */}
-            <div className="flex flex-col justify-between h-[160px] absolute left-6 top-16 bottom-6 text-white/60 font-label-sm text-[11px]">
-              <span>105</span>
-              <span>75</span>
-              <span>65</span>
-              <span>35</span>
-              <span>45</span>
-            </div>
-            {/* Tooltip Marker */}
-            <div className="absolute top-[40px] left-[65%] flex flex-col items-center">
-              <div className="bg-white text-black px-3 py-1 rounded-full font-label-sm text-[12px] font-bold mb-1 shadow-lg">
-                +0.25%
+
+            {/* Dynamic Interactive Tooltip Marker: ONLY rendered on touch/hover */}
+            {chartHover && (
+              <div
+                className="absolute z-20 flex flex-col items-center pointer-events-none transition-all"
+                style={{
+                  left: `${Math.min(75, Math.max(10, chartHover.relX * 100 - 10))}%`,
+                  top: `${Math.min(50, Math.max(15, (chartHover.y / 200) * 100 - 25))}%`,
+                }}
+              >
+                <div className="bg-white text-black px-3 py-1 rounded-full font-label-sm text-[12px] font-bold mb-1 shadow-lg">
+                  {chartHover.pct}
+                </div>
+                <div className="border border-white/20 rounded-full px-3 py-1 text-white font-label-sm text-[11px] bg-black/80 backdrop-blur-sm shadow-xl">
+                  {chartHover.dateStr}
+                </div>
               </div>
-              <div className="w-2.5 h-2.5 rounded-full bg-black border-2 border-primary-fixed z-10 chart-glow" />
-              <div className="w-[1px] h-28 bg-primary-fixed/50 border-l border-primary-fixed/80" />
-              <div className="border border-white/20 rounded-full px-3 py-1 mt-1 text-white/80 font-label-sm text-[11px] bg-black/50 backdrop-blur-sm">
-                May 25
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Your Wallet Quick Swap Card */}

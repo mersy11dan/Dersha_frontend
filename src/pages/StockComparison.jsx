@@ -148,166 +148,194 @@ export default function StockComparison() {
     const clientX = e.touches ? e.touches[0].clientX : e.clientX
     const relX = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width))
     const svgX = relX * 320
-    const svgY = 85 + Math.cos(relX * Math.PI * 3) * 35
+    const svgY = 75 + Math.cos(relX * Math.PI * 3) * 35
 
     const isETB = stock2.openPrice.includes('ETB')
     const unit = isETB ? ' ETB' : ''
     const prefix = stock2.openPrice.startsWith('$') ? '$' : ''
-    const baseOpen = parseFloat(stock2.openPrice.replace(/[^0-9.]/g, '')) || 162.1
-    const baseClose = parseFloat(stock2.closePrice.replace(/[^0-9.]/g, '')) || 180.0
+    const baseOpen = parseFloat(stock2.openPrice.replace(/[^0-9.]/g, '')) || 162.10
+    const baseClose = parseFloat(stock2.closePrice.replace(/[^0-9.]/g, '')) || 180.02
 
     const openVal = isETB
-      ? Math.round(baseOpen + Math.cos(relX * Math.PI * 2) * 60).toLocaleString() + unit
-      : prefix + (baseOpen + Math.cos(relX * Math.PI * 2) * 12).toFixed(2)
+      ? Math.round(baseOpen + Math.sin(relX * Math.PI * 2) * 60).toLocaleString() + unit
+      : prefix + (baseOpen + Math.sin(relX * Math.PI * 2) * 12).toFixed(2)
     const closeVal = isETB
-      ? Math.round(baseClose + Math.sin(relX * Math.PI * 2.5) * 75).toLocaleString() + unit
-      : prefix + (baseClose + Math.sin(relX * Math.PI * 2.5) * 18).toFixed(2)
+      ? Math.round(baseClose + Math.cos(relX * Math.PI * 2.5) * 75).toLocaleString() + unit
+      : prefix + (baseClose + Math.cos(relX * Math.PI * 2.5) * 18).toFixed(2)
 
     setHover2({ x: svgX, y: svgY, relX, open: openVal, close: closeVal })
   }
 
-  // Active focus coordinates
-  const activePoint1 = hover1 ?? {
-    x: 220,
-    y: 65,
-    relX: 0.68,
-    open: stock1.openPrice,
-    close: stock1.closePrice,
-  }
-
-  const activePoint2 = hover2 ?? {
-    x: 220,
-    y: 95,
-    relX: 0.68,
-    open: stock2.openPrice,
-    close: stock2.closePrice,
-  }
-
   return (
-    <DashboardLayout activeNav="stock-comparison">
-      <div className="space-y-6">
-        {/* PAGE HEADER */}
-        <div>
-          <h1 className="font-headline-lg text-xl md:text-2xl text-white tracking-tight">
-            Stock Comparison
-          </h1>
-          <p className="font-body-md text-xs text-[#a0a0a0] mt-0.5">
-            Compare performance metrics, valuation, revenue growth, and historical price movements across your portfolio assets.
-          </p>
-        </div>
-
-        {/* 1. SEARCH STOCKS TO COMPARE CONTAINER */}
-        <div className="glass-card rounded-2xl p-5 space-y-3">
-          <h2 className="font-title-md text-base text-white font-bold">
-            Search Stocks to Compare
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-3">
-            {/* 1ST STOCK SELECTOR */}
-            <div className="relative glass-card rounded-xl h-11 px-3 border border-white/10 flex items-center justify-between">
-              <span className="font-label-sm text-[10px] text-[#a0a0a0] uppercase shrink-0 mr-2">
-                1ST:
-              </span>
-              <select
-                value={stock1Id}
-                onChange={(e) => setStock1Id(e.target.value)}
-                className="bg-transparent font-title-md text-xs text-white outline-none cursor-pointer w-full pr-6 truncate"
-              >
-                {MOCK_STOCKS.map((s) => (
-                  <option key={s.id} value={s.id} disabled={s.id === stock2Id} className="bg-[#121414] text-white">
-                    {s.name} ({s.ticker})
-                  </option>
-                ))}
-              </select>
-              <span className="material-symbols-outlined text-gray-400 text-sm absolute right-2.5 pointer-events-none">
-                search
-              </span>
+    <DashboardLayout activeNav="stock-comparison" sidebarVariant="exchange">
+      <div className="flex flex-col gap-6 font-body-md text-on-surface">
+        {/* Page Title & Breadcrumb Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 font-label-sm text-xs text-[#a0a0a0] mb-1">
+              <span>MARKETPLACE</span>
+              <span>/</span>
+              <span className="text-primary-fixed">STOCK COMPARISON</span>
             </div>
+            <h1 className="font-display-lg text-2xl sm:text-3xl font-bold text-white tracking-tight">
+              Sub-Fund & Asset Stock Comparison
+            </h1>
+            <p className="font-body-md text-xs text-[#a0a0a0] mt-1">
+              Side-by-side technical evaluation, financial telemetry, and live yield comparison.
+            </p>
+          </div>
 
-            {/* SWAP BUTTON */}
+          <div className="flex items-center gap-2">
             <button
               onClick={handleSwap}
-              title="Swap stocks"
-              className="w-9 h-9 rounded-full glass-card border border-white/15 flex items-center justify-center text-primary-fixed hover:bg-white/10 transition-all mx-auto"
+              className="px-4 py-2 rounded-xl glass-card text-white font-title-md text-xs hover:border-primary-fixed/50 transition-all flex items-center gap-2 border border-white/10"
             >
-              <span className="material-symbols-outlined text-base">swap_horiz</span>
+              <span className="material-symbols-outlined text-sm text-primary-fixed">swap_horiz</span>
+              <span>Swap Positions</span>
             </button>
+          </div>
+        </div>
 
-            {/* 2ND STOCK SELECTOR */}
-            <div className="relative glass-card rounded-xl h-11 px-3 border border-white/10 flex items-center justify-between">
-              <span className="font-label-sm text-[10px] text-[#a0a0a0] uppercase shrink-0 mr-2">
-                2ND:
-              </span>
-              <select
-                value={stock2Id}
-                onChange={(e) => setStock2Id(e.target.value)}
-                className="bg-transparent font-title-md text-xs text-white outline-none cursor-pointer w-full pr-6 truncate"
+        {/* 1. TOP SELECTOR CARD */}
+        <div className="glass-card rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-11 gap-4 items-center">
+            {/* Asset 1 Dropdown */}
+            <div className="md:col-span-5 space-y-1.5">
+              <label className="font-label-sm text-[10px] text-[#a0a0a0] uppercase tracking-wider block">
+                Primary Asset (Side A)
+              </label>
+              <div className="relative">
+                <select
+                  value={stock1Id}
+                  onChange={(e) => setStock1Id(e.target.value)}
+                  className="w-full bg-[#121414]/90 border border-white/15 rounded-xl px-3.5 py-2.5 text-white font-title-md text-sm outline-none focus:border-primary-fixed/60 transition-colors appearance-none cursor-pointer pr-10"
+                >
+                  {MOCK_STOCKS.map((s) => (
+                    <option key={s.id} value={s.id} disabled={s.id === stock2Id} className="bg-[#0c0f0f] text-white">
+                      {s.ticker} — {s.name} ({s.price})
+                    </option>
+                  ))}
+                </select>
+                <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none text-base">
+                  expand_more
+                </span>
+              </div>
+            </div>
+
+            {/* Swap Button Divider */}
+            <div className="md:col-span-1 flex justify-center py-1 md:py-0">
+              <button
+                onClick={handleSwap}
+                aria-label="Swap Assets"
+                className="w-9 h-9 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-primary-fixed hover:bg-white/20 hover:scale-110 transition-all shadow-md"
               >
-                {MOCK_STOCKS.map((s) => (
-                  <option key={s.id} value={s.id} disabled={s.id === stock1Id} className="bg-[#121414] text-white">
-                    {s.name} ({s.ticker})
-                  </option>
-                ))}
-              </select>
-              <span className="material-symbols-outlined text-gray-400 text-sm absolute right-2.5 pointer-events-none">
-                search
-              </span>
+                <span className="material-symbols-outlined text-base">compare_arrows</span>
+              </button>
+            </div>
+
+            {/* Asset 2 Dropdown */}
+            <div className="md:col-span-5 space-y-1.5">
+              <label className="font-label-sm text-[10px] text-[#a0a0a0] uppercase tracking-wider block">
+                Benchmark Asset (Side B)
+              </label>
+              <div className="relative">
+                <select
+                  value={stock2Id}
+                  onChange={(e) => setStock2Id(e.target.value)}
+                  className="w-full bg-[#121414]/90 border border-white/15 rounded-xl px-3.5 py-2.5 text-white font-title-md text-sm outline-none focus:border-primary-fixed/60 transition-colors appearance-none cursor-pointer pr-10"
+                >
+                  {MOCK_STOCKS.map((s) => (
+                    <option key={s.id} value={s.id} disabled={s.id === stock1Id} className="bg-[#0c0f0f] text-white">
+                      {s.ticker} — {s.name} ({s.price})
+                    </option>
+                  ))}
+                </select>
+                <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none text-base">
+                  expand_more
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* 2. OVERVIEW CARDS SECTION */}
-        <div className="space-y-3">
-          <h2 className="font-title-md text-base text-white">Overview</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* OVERVIEW CARD 1 */}
-            <div className="glass-card rounded-2xl p-4 md:p-5 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center font-title-md text-sm text-primary-fixed">
-                  {stock1.ticker.slice(0, 2)}
+        {/* 2. HEAD-TO-HEAD HIGHLIGHT CARDS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Card A */}
+          <div className="glass-card rounded-2xl p-5 border-l-4 border-l-[#38bdf8] space-y-3 relative">
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-display-lg text-lg text-white font-bold">{stock1.ticker}</span>
+                  <span className="font-label-sm text-[10px] bg-[#38bdf8]/15 text-[#38bdf8] border border-[#38bdf8]/30 px-2 py-0.5 rounded-full font-bold">
+                    SIDE A
+                  </span>
                 </div>
-                <div>
-                  <h3 className="font-title-md text-sm text-white">{stock1.ticker}</h3>
-                  <p className="font-body-md text-xs text-[#a0a0a0]">{stock1.name}</p>
-                </div>
+                <p className="font-body-md text-xs text-[#a0a0a0] mt-0.5">{stock1.name}</p>
               </div>
-              <div className="flex items-center gap-5 text-right">
-                <div>
-                  <span className="font-label-sm text-[10px] text-[#a0a0a0] uppercase block">Revenue</span>
-                  <div className="flex items-center justify-end gap-0.5 font-title-md text-xs text-emerald-400 font-bold">
-                    <span>{stock1.revenue}</span>
-                    <span className="material-symbols-outlined text-xs">arrow_drop_up</span>
-                  </div>
-                </div>
-                <div>
-                  <span className="font-label-sm text-[10px] text-[#a0a0a0] uppercase block">Market Cap</span>
-                  <span className="font-title-md text-xs text-white font-bold">{stock1.marketCap}</span>
-                </div>
+
+              <div className="text-right">
+                <p className="font-display-lg text-2xl text-white font-extrabold">{stock1.price}</p>
+                <span
+                  className={`font-label-sm text-xs font-bold ${
+                    stock1.priceChangeIsPositive ? 'text-emerald-400' : 'text-rose-400'
+                  }`}
+                >
+                  {stock1.priceChange} (24H)
+                </span>
               </div>
             </div>
 
-            {/* OVERVIEW CARD 2 */}
-            <div className="glass-card rounded-2xl p-4 md:p-5 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center font-title-md text-sm text-sky-400">
-                  {stock2.ticker.slice(0, 2)}
-                </div>
-                <div>
-                  <h3 className="font-title-md text-sm text-white">{stock2.ticker}</h3>
-                  <p className="font-body-md text-xs text-[#a0a0a0]">{stock2.name}</p>
+            <div className="pt-2 border-t border-white/10 grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <span className="font-label-sm text-[10px] text-[#a0a0a0] uppercase block">Revenue</span>
+                <div className="flex items-center gap-0.5 font-title-md text-xs text-emerald-400 font-bold">
+                  <span>{stock1.revenue}</span>
+                  <span className="material-symbols-outlined text-xs">arrow_drop_up</span>
                 </div>
               </div>
-              <div className="flex items-center gap-5 text-right">
-                <div>
-                  <span className="font-label-sm text-[10px] text-[#a0a0a0] uppercase block">Revenue</span>
-                  <div className="flex items-center justify-end gap-0.5 font-title-md text-xs text-emerald-400 font-bold">
-                    <span>{stock2.revenue}</span>
-                    <span className="material-symbols-outlined text-xs">arrow_drop_up</span>
-                  </div>
+              <div>
+                <span className="font-label-sm text-[10px] text-[#a0a0a0] uppercase block">Market Cap</span>
+                <span className="font-title-md text-xs text-white font-bold">{stock1.marketCap}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Card B */}
+          <div className="glass-card rounded-2xl p-5 border-l-4 border-l-[#d5fb45] space-y-3 relative">
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-display-lg text-lg text-white font-bold">{stock2.ticker}</span>
+                  <span className="font-label-sm text-[10px] bg-primary-fixed/15 text-primary-fixed border border-primary-fixed/30 px-2 py-0.5 rounded-full font-bold">
+                    SIDE B
+                  </span>
                 </div>
-                <div>
-                  <span className="font-label-sm text-[10px] text-[#a0a0a0] uppercase block">Market Cap</span>
-                  <span className="font-title-md text-xs text-white font-bold">{stock2.marketCap}</span>
+                <p className="font-body-md text-xs text-[#a0a0a0] mt-0.5">{stock2.name}</p>
+              </div>
+
+              <div className="text-right">
+                <p className="font-display-lg text-2xl text-white font-extrabold">{stock2.price}</p>
+                <span
+                  className={`font-label-sm text-xs font-bold ${
+                    stock2.priceChangeIsPositive ? 'text-emerald-400' : 'text-rose-400'
+                  }`}
+                >
+                  {stock2.priceChange} (24H)
+                </span>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-white/10 grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <span className="font-label-sm text-[10px] text-[#a0a0a0] uppercase block">Revenue</span>
+                <div className="flex items-center justify-end gap-0.5 font-title-md text-xs text-emerald-400 font-bold">
+                  <span>{stock2.revenue}</span>
+                  <span className="material-symbols-outlined text-xs">arrow_drop_up</span>
                 </div>
+              </div>
+              <div>
+                <span className="font-label-sm text-[10px] text-[#a0a0a0] uppercase block">Market Cap</span>
+                <span className="font-title-md text-xs text-white font-bold">{stock2.marketCap}</span>
               </div>
             </div>
           </div>
@@ -364,19 +392,8 @@ export default function StockComparison() {
                 </div>
               </div>
 
-              {/* Chart Body with Left Y-Axis & Interactive SVG */}
+              {/* Chart Body with Clean Interactive SVG */}
               <div className="flex gap-3 pt-2">
-                {/* Left Y-Axis Ticks */}
-                <div className="flex flex-col justify-between h-[180px] font-label-sm text-[11px] text-[#8e97a4] shrink-0 py-1">
-                  <span>260</span>
-                  <span>240</span>
-                  <span>220</span>
-                  <span>200</span>
-                  <span>180</span>
-                  <span>160</span>
-                </div>
-
-                {/* SVG Graph Box with Pointer Listener */}
                 <div
                   className="flex-1 relative h-[180px] cursor-crosshair select-none"
                   onMouseMove={handlePointerMove1}
@@ -405,12 +422,6 @@ export default function StockComparison() {
                       fill="url(#msft-area)"
                     />
 
-                    {/* Dynamic Dotted Horizontal Price Guide */}
-                    <line x1="0" y1={activePoint1.y} x2="320" y2={activePoint1.y} stroke="rgba(255,255,255,0.3)" strokeDasharray="4 4" />
-
-                    {/* Dynamic Dotted Vertical Month Crosshair */}
-                    <line x1={activePoint1.x} y1="0" x2={activePoint1.x} y2="180" stroke="rgba(255,255,255,0.3)" strokeDasharray="4 4" />
-
                     {/* Smooth Wave Line */}
                     <path
                       d="M0,80 C40,85 80,45 120,55 C160,65 200,95 240,65 C280,45 320,80 320,30"
@@ -420,36 +431,44 @@ export default function StockComparison() {
                       className="chart-glow"
                     />
 
-                    {/* Active Interactive Node Marker */}
-                    <circle cx={activePoint1.x} cy={activePoint1.y} r="5" fill="#38bdf8" stroke="#ffffff" strokeWidth="2" className="chart-glow" />
+                    {/* Interactive elements rendered ONLY on touch/hover */}
+                    {hover1 && (
+                      <>
+                        <line x1="0" y1={hover1.y} x2="320" y2={hover1.y} stroke="rgba(255,255,255,0.4)" strokeDasharray="4 4" />
+                        <line x1={hover1.x} y1="0" x2={hover1.x} y2="180" stroke="rgba(255,255,255,0.4)" strokeDasharray="4 4" />
+                        <circle cx={hover1.x} cy={hover1.y} r="5" fill="#38bdf8" stroke="#ffffff" strokeWidth="2" className="chart-glow" />
+                      </>
+                    )}
                   </svg>
 
-                  {/* Dark Dynamic Floating Tooltip Card */}
-                  <div
-                    className="absolute bg-[#1e2024]/95 backdrop-blur-md border border-white/20 rounded-2xl p-3 px-4 shadow-2xl text-xs space-y-1.5 z-20 transition-all pointer-events-none"
-                    style={{
-                      left: `${Math.min(55, Math.max(5, activePoint1.relX * 100 - 15))}%`,
-                      top: `${Math.min(55, Math.max(10, (activePoint1.y / 180) * 100 - 30))}%`,
-                    }}
-                  >
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-[#a0a0a0] font-body-md flex items-center gap-1">
-                        Open <span className="material-symbols-outlined text-xs text-emerald-400">arrow_drop_up</span>
-                      </span>
-                      <span className="font-mono text-white font-bold">{activePoint1.open}</span>
+                  {/* Dark Dynamic Floating Tooltip Card: ONLY rendered on touch/hover */}
+                  {hover1 && (
+                    <div
+                      className="absolute bg-[#1e2024]/95 backdrop-blur-md border border-white/20 rounded-2xl p-3 px-4 shadow-2xl text-xs space-y-1.5 z-20 transition-all pointer-events-none"
+                      style={{
+                        left: `${Math.min(55, Math.max(5, hover1.relX * 100 - 15))}%`,
+                        top: `${Math.min(55, Math.max(10, (hover1.y / 180) * 100 - 30))}%`,
+                      }}
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="text-[#a0a0a0] font-body-md flex items-center gap-1">
+                          Open <span className="material-symbols-outlined text-xs text-emerald-400">arrow_drop_up</span>
+                        </span>
+                        <span className="font-mono text-white font-bold">{hover1.open}</span>
+                      </div>
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="text-[#a0a0a0] font-body-md flex items-center gap-1">
+                          Close <span className="material-symbols-outlined text-xs text-rose-400">arrow_drop_down</span>
+                        </span>
+                        <span className="font-mono text-white font-bold">{hover1.close}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-[#a0a0a0] font-body-md flex items-center gap-1">
-                        Close <span className="material-symbols-outlined text-xs text-rose-400">arrow_drop_down</span>
-                      </span>
-                      <span className="font-mono text-white font-bold">{activePoint1.close}</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
 
               {/* Bottom X-Axis Labels */}
-              <div className="flex justify-between pl-9 font-label-sm text-[11px] text-[#8e97a4] pt-1">
+              <div className="flex justify-between font-label-sm text-[11px] text-[#8e97a4] pt-1">
                 <span>Jan</span>
                 <span>Mar</span>
                 <span>May</span>
@@ -485,19 +504,8 @@ export default function StockComparison() {
                 </div>
               </div>
 
-              {/* Chart Body with Left Y-Axis & Interactive SVG */}
+              {/* Chart Body with Clean Interactive SVG */}
               <div className="flex gap-3 pt-2">
-                {/* Left Y-Axis Ticks */}
-                <div className="flex flex-col justify-between h-[180px] font-label-sm text-[11px] text-[#8e97a4] shrink-0 py-1">
-                  <span>200</span>
-                  <span>180</span>
-                  <span>160</span>
-                  <span>140</span>
-                  <span>120</span>
-                  <span>100</span>
-                </div>
-
-                {/* SVG Graph Box with Pointer Listener */}
                 <div
                   className="flex-1 relative h-[180px] cursor-crosshair select-none"
                   onMouseMove={handlePointerMove2}
@@ -526,12 +534,6 @@ export default function StockComparison() {
                       fill="url(#aapl-area)"
                     />
 
-                    {/* Dynamic Dotted Horizontal Price Guide */}
-                    <line x1="0" y1={activePoint2.y} x2="320" y2={activePoint2.y} stroke="rgba(255,255,255,0.3)" strokeDasharray="4 4" />
-
-                    {/* Dynamic Dotted Vertical Month Crosshair */}
-                    <line x1={activePoint2.x} y1="0" x2={activePoint2.x} y2="180" stroke="rgba(255,255,255,0.3)" strokeDasharray="4 4" />
-
                     {/* Smooth Wave Line */}
                     <path
                       d="M0,90 C50,60 100,55 150,90 C200,95 250,75 300,105 C310,95 320,40 320,40"
@@ -541,36 +543,44 @@ export default function StockComparison() {
                       className="chart-glow"
                     />
 
-                    {/* Active Interactive Node Marker */}
-                    <circle cx={activePoint2.x} cy={activePoint2.y} r="5" fill="#d5fb45" stroke="#ffffff" strokeWidth="2" className="chart-glow" />
+                    {/* Interactive elements rendered ONLY on touch/hover */}
+                    {hover2 && (
+                      <>
+                        <line x1="0" y1={hover2.y} x2="320" y2={hover2.y} stroke="rgba(255,255,255,0.4)" strokeDasharray="4 4" />
+                        <line x1={hover2.x} y1="0" x2={hover2.x} y2="180" stroke="rgba(255,255,255,0.4)" strokeDasharray="4 4" />
+                        <circle cx={hover2.x} cy={hover2.y} r="5" fill="#d5fb45" stroke="#ffffff" strokeWidth="2" className="chart-glow" />
+                      </>
+                    )}
                   </svg>
 
-                  {/* Dark Dynamic Floating Tooltip Card */}
-                  <div
-                    className="absolute bg-[#1e2024]/95 backdrop-blur-md border border-white/20 rounded-2xl p-3 px-4 shadow-2xl text-xs space-y-1.5 z-20 transition-all pointer-events-none"
-                    style={{
-                      left: `${Math.min(55, Math.max(5, activePoint2.relX * 100 - 15))}%`,
-                      top: `${Math.min(55, Math.max(10, (activePoint2.y / 180) * 100 - 30))}%`,
-                    }}
-                  >
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-[#a0a0a0] font-body-md flex items-center gap-1">
-                        Open <span className="material-symbols-outlined text-xs text-emerald-400">arrow_drop_up</span>
-                      </span>
-                      <span className="font-mono text-white font-bold">{activePoint2.open}</span>
+                  {/* Dark Dynamic Floating Tooltip Card: ONLY rendered on touch/hover */}
+                  {hover2 && (
+                    <div
+                      className="absolute bg-[#1e2024]/95 backdrop-blur-md border border-white/20 rounded-2xl p-3 px-4 shadow-2xl text-xs space-y-1.5 z-20 transition-all pointer-events-none"
+                      style={{
+                        left: `${Math.min(55, Math.max(5, hover2.relX * 100 - 15))}%`,
+                        top: `${Math.min(55, Math.max(10, (hover2.y / 180) * 100 - 30))}%`,
+                      }}
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="text-[#a0a0a0] font-body-md flex items-center gap-1">
+                          Open <span className="material-symbols-outlined text-xs text-emerald-400">arrow_drop_up</span>
+                        </span>
+                        <span className="font-mono text-white font-bold">{hover2.open}</span>
+                      </div>
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="text-[#a0a0a0] font-body-md flex items-center gap-1">
+                          Close <span className="material-symbols-outlined text-xs text-rose-400">arrow_drop_down</span>
+                        </span>
+                        <span className="font-mono text-white font-bold">{hover2.close}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-[#a0a0a0] font-body-md flex items-center gap-1">
-                        Close <span className="material-symbols-outlined text-xs text-rose-400">arrow_drop_down</span>
-                      </span>
-                      <span className="font-mono text-white font-bold">{activePoint2.close}</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
 
               {/* Bottom X-Axis Labels */}
-              <div className="flex justify-between pl-9 font-label-sm text-[11px] text-[#8e97a4] pt-1">
+              <div className="flex justify-between font-label-sm text-[11px] text-[#8e97a4] pt-1">
                 <span>Jan</span>
                 <span>Mar</span>
                 <span>May</span>
@@ -599,38 +609,38 @@ export default function StockComparison() {
                 <tr>
                   <td className="py-2.5 px-3 text-white font-sans font-medium">Dividend Yield</td>
                   <td className="py-2.5 px-3">{stock1.dividendYield}</td>
-                  <td className="py-2.5 px-3">{stock2.dividendYield}</td>
-                  <td className="py-2.5 px-3 text-right text-emerald-400 font-bold">{stock1.ticker} (+ Higher)</td>
+                  <td className="py-2.5 px-3 text-primary-fixed font-bold">{stock2.dividendYield}</td>
+                  <td className="py-2.5 px-3 text-right text-primary-fixed font-bold">{stock2.ticker} (+{parseFloat(stock2.dividendYield) - parseFloat(stock1.dividendYield)}%)</td>
                 </tr>
                 <tr>
                   <td className="py-2.5 px-3 text-white font-sans font-medium">P/E Ratio</td>
                   <td className="py-2.5 px-3">{stock1.peRatio}</td>
-                  <td className="py-2.5 px-3">{stock2.peRatio}</td>
-                  <td className="py-2.5 px-3 text-right text-emerald-400 font-bold">{stock2.ticker} (Lower Valuation)</td>
+                  <td className="py-2.5 px-3 text-primary-fixed font-bold">{stock2.peRatio}</td>
+                  <td className="py-2.5 px-3 text-right text-sky-400 font-bold">{stock2.ticker} (More Attractive)</td>
                 </tr>
                 <tr>
                   <td className="py-2.5 px-3 text-white font-sans font-medium">52-Week Range</td>
                   <td className="py-2.5 px-3">{stock1.range52w}</td>
                   <td className="py-2.5 px-3">{stock2.range52w}</td>
-                  <td className="py-2.5 px-3 text-right text-[#a0a0a0]">-</td>
+                  <td className="py-2.5 px-3 text-right text-white/60">Comparable</td>
                 </tr>
                 <tr>
-                  <td className="py-2.5 px-3 text-white font-sans font-medium">24h Volume</td>
+                  <td className="py-2.5 px-3 text-white font-sans font-medium">24h Trading Volume</td>
                   <td className="py-2.5 px-3">{stock1.volume24h}</td>
-                  <td className="py-2.5 px-3">{stock2.volume24h}</td>
-                  <td className="py-2.5 px-3 text-right text-emerald-400 font-bold">{stock2.ticker} (+ Higher Liquidity)</td>
+                  <td className="py-2.5 px-3 text-primary-fixed font-bold">{stock2.volume24h}</td>
+                  <td className="py-2.5 px-3 text-right text-primary-fixed font-bold">{stock2.ticker} (+Higher Liquidity)</td>
                 </tr>
                 <tr>
-                  <td className="py-2.5 px-3 text-white font-sans font-medium">Volatility (Beta)</td>
+                  <td className="py-2.5 px-3 text-white font-sans font-medium">Beta (Volatility)</td>
                   <td className="py-2.5 px-3">{stock1.beta}</td>
                   <td className="py-2.5 px-3">{stock2.beta}</td>
-                  <td className="py-2.5 px-3 text-right text-emerald-400 font-bold">{stock1.ticker} (Lower Risk)</td>
+                  <td className="py-2.5 px-3 text-right text-sky-400 font-bold">{stock1.ticker} (Lower Risk)</td>
                 </tr>
                 <tr>
                   <td className="py-2.5 px-3 text-white font-sans font-medium">Analyst Consensus</td>
-                  <td className="py-2.5 px-3 text-primary-fixed">{stock1.analystRating}</td>
-                  <td className="py-2.5 px-3 text-sky-400">{stock2.analystRating}</td>
-                  <td className="py-2.5 px-3 text-right text-primary-fixed font-bold">Both Outperform</td>
+                  <td className="py-2.5 px-3 text-sky-400 font-bold">{stock1.analystRating}</td>
+                  <td className="py-2.5 px-3 text-primary-fixed font-bold">{stock2.analystRating}</td>
+                  <td className="py-2.5 px-3 text-right text-sky-400 font-bold">{stock1.ticker}</td>
                 </tr>
               </tbody>
             </table>
