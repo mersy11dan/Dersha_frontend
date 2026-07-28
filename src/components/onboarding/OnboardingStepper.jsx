@@ -1,46 +1,30 @@
 const STEPS = [
-  { icon: 'person', label: 'Account Info' },
-  { icon: 'verified_user', label: 'Identity' },
-  { icon: 'account_balance_wallet', label: 'Bank/Wallet' },
+  { icon: 'person', label: '01. ACCOUNT INFO' },
+  { icon: 'verified_user', label: '02. IDENTITY' },
+  { icon: 'account_balance_wallet', label: '03. FUNDING LINK' },
 ]
 
-function stepProgress(currentStep, totalSteps) {
-  if (currentStep >= totalSteps) return 1
-  return (currentStep - 0.5) / (totalSteps - 1)
-}
-
 export default function OnboardingStepper({ currentStep, className = '' }) {
-  const progress = stepProgress(currentStep, STEPS.length)
-
   return (
-    <div
-      className={`dersha-step-track ${className}`.trim()}
-      style={{ '--step-progress': progress }}
-    >
-      <div className="dersha-step-progress" aria-hidden="true" />
-
+    <div className={`grid grid-cols-3 gap-3 ${className}`.trim()}>
       {STEPS.map((step, index) => {
         const stepNumber = index + 1
-        const state =
-          stepNumber < currentStep ? 'complete' : stepNumber === currentStep ? 'active' : 'pending'
-
-        const labelClass =
-          state === 'active'
-            ? 'dersha-step-label-active'
-            : state === 'pending'
-              ? 'dersha-step-label-pending'
-              : 'text-on-surface'
+        const isActive = stepNumber === currentStep
+        const isComplete = stepNumber < currentStep
 
         return (
-          <div key={step.label} className="dersha-step-item gap-3">
-            <div
-              className={`dersha-step-dot dersha-step-dot-${state}${state === 'active' ? ' ring-4 ring-primary/20' : ''}`}
-            >
-              <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
-                {step.icon}
-              </span>
-            </div>
-            <span className={`font-label-caps text-label-caps ${labelClass}`}>{step.label}</span>
+          <div
+            key={step.label}
+            className={`flex items-center gap-3 p-3 rounded-[2px] border font-mono text-xs font-bold transition-all ${
+              isActive
+                ? 'border-[#D4FF00] bg-[#D4FF00] text-[#000000] shadow-[2px_2px_0px_#ffffff]'
+                : isComplete
+                  ? 'border-[#2AFF0A] bg-[#2AFF0A]/10 text-[#2AFF0A]'
+                  : 'border-white/10 bg-[#050505] text-[#8c8c8c]'
+            }`}
+          >
+            <span className="material-symbols-outlined text-base">{step.icon}</span>
+            <span className="truncate">{step.label}</span>
           </div>
         )
       })}

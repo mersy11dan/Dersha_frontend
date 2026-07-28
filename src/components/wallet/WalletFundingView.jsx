@@ -7,10 +7,10 @@ import { useAuth } from '../../context/AuthContext'
 import { walletService } from '../../lib/services'
 
 const DEPOSIT_CHANNELS = [
-  { code: 'TELEBIRR', label: 'Telebirr Wallet', icon: 'smartphone' },
-  { code: 'CBE_BIRR', label: 'CBE Birr Wallet', icon: 'smartphone' },
+  { code: 'TELEBIRR', label: 'Telebirr Mobile Wallet', icon: 'smartphone' },
+  { code: 'CBE_BIRR', label: 'CBE Birr Mobile Wallet', icon: 'smartphone' },
   { code: 'CBE_DIRECT', label: 'Commercial Bank of Ethiopia', icon: 'account_balance' },
-  { code: 'AWASH_DIRECT', label: 'Awash Bank', icon: 'account_balance' },
+  { code: 'AWASH_DIRECT', label: 'Awash Bank Direct', icon: 'account_balance' },
 ]
 
 const WITHDRAW_BANKS = [
@@ -21,14 +21,6 @@ const WITHDRAW_BANKS = [
   { code: 'BOAETET', label: 'Bank of Abyssinia' },
 ]
 
-const STATUS_TONE = {
-  SETTLED: 'primary',
-  PROCESSING: 'secondary',
-  ESCROWED: 'secondary',
-  PENDING_BANK_VERIFICATION: 'secondary',
-  FAILED: 'error',
-}
-
 const MINIMUMS = { deposit: 10, withdraw: 100 }
 
 function FundingOverview({ balance, loading }) {
@@ -38,194 +30,95 @@ function FundingOverview({ balance, loading }) {
   const pct = (value) => (total > 0 ? `${Math.round((value / total) * 100)}%` : '0%')
 
   return (
-    <div className="wallet-panel h-full p-6">
-      <h3 className="mb-6 text-xs font-bold uppercase tracking-wider text-outline">
-        Funding Overview
-      </h3>
-      {loading ? (
-        <div className="space-y-4" aria-busy="true">
-          <div className="h-4 w-2/3 animate-pulse rounded bg-outline-variant/20" />
-          <div className="h-2 w-full animate-pulse rounded-full bg-outline-variant/20" />
-          <div className="h-4 w-1/2 animate-pulse rounded bg-outline-variant/20" />
-          <div className="h-2 w-full animate-pulse rounded-full bg-outline-variant/20" />
-        </div>
-      ) : (
-        <div className="space-y-6">
-          <div>
-            <div className="mb-2 flex justify-between">
-              <span className="text-sm text-on-surface">Available Balance</span>
-              <span className="text-sm font-bold text-primary">{formatEtb(available)}</span>
+    <div className="glass-card rounded-[24px] h-full p-7 flex flex-col justify-between">
+      <div>
+        <h3 className="mb-6 font-label-sm text-[11px] font-bold uppercase tracking-wider text-white/50">
+          CASH & LIQUIDITY OVERVIEW
+        </h3>
+        {loading ? (
+          <div className="space-y-4" aria-busy="true">
+            <div className="h-4 w-2/3 animate-pulse rounded bg-white/10" />
+            <div className="h-2 w-full animate-pulse rounded-full bg-white/10" />
+            <div className="h-4 w-1/2 animate-pulse rounded bg-white/10" />
+            <div className="h-2 w-full animate-pulse rounded-full bg-white/10" />
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <div>
+              <div className="mb-2 flex justify-between font-body-md text-[13px]">
+                <span className="font-title-md font-bold text-white">Available Buying Power</span>
+                <span className="font-title-md font-bold text-primary-fixed">{formatEtb(available)}</span>
+              </div>
+              <div className="h-3 w-full overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full rounded-full bg-primary-fixed chart-glow transition-all duration-500"
+                  style={{ width: pct(available) }}
+                />
+              </div>
             </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-outline-variant/20">
-              <div className="h-full rounded-full bg-primary transition-all" style={{ width: pct(available) }} />
+            <div>
+              <div className="mb-2 flex justify-between font-body-md text-[13px]">
+                <span className="font-title-md font-bold text-white">Escrowed Balance</span>
+                <span className="font-title-md font-bold text-white/70">{formatEtb(escrowed)}</span>
+              </div>
+              <div className="h-3 w-full overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full rounded-full bg-white/40 transition-all duration-500"
+                  style={{ width: pct(escrowed) }}
+                />
+              </div>
+            </div>
+            <div className="border-t border-white/10 pt-5">
+              <div className="flex items-center justify-between">
+                <p className="font-label-sm text-[11px] text-white/50 uppercase tracking-wider">TOTAL CASH</p>
+                <p className="font-display-lg text-[24px] font-extrabold text-white">{formatEtb(total)}</p>
+              </div>
             </div>
           </div>
-          <div>
-            <div className="mb-2 flex justify-between">
-              <span className="text-sm text-on-surface">Escrowed Amount</span>
-              <span className="text-sm font-bold text-secondary">{formatEtb(escrowed)}</span>
-            </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-outline-variant/20">
-              <div className="h-full rounded-full bg-secondary transition-all" style={{ width: pct(escrowed) }} />
-            </div>
-          </div>
-          <div className="border-t border-outline-variant/10 pt-4">
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-outline">Total Portfolio Cash</p>
-              <p className="text-xl font-semibold text-primary">{formatEtb(total)}</p>
-            </div>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }
 
 function SecurityStatus({ escrowed, verified }) {
   return (
-    <div className="wallet-panel flex h-full flex-col p-6">
-      <h3 className="mb-6 text-xs font-bold uppercase tracking-wider text-outline">
-        Security &amp; Status
+    <div className="glass-card rounded-[24px] flex h-full flex-col p-7">
+      <h3 className="mb-6 font-label-sm text-[11px] font-bold uppercase tracking-wider text-white/50">
+        SECURITY & BANK TRUST
       </h3>
       <div className="flex-1 space-y-4">
         <div
-          className={`flex items-center gap-3 rounded-xl border p-3 ${
+          className={`flex items-center gap-3.5 rounded-2xl border p-4 ${
             verified
-              ? 'border-primary/10 bg-primary/5'
-              : 'border-secondary/10 bg-secondary/5'
+              ? 'border-primary-fixed/30 bg-primary-fixed/10 text-primary-fixed'
+              : 'border-amber-500/30 bg-amber-500/10 text-amber-400'
           }`}
         >
-          <span
-            className={`material-symbols-outlined ${verified ? 'text-primary' : 'text-secondary'}`}
-            aria-hidden="true"
-          >
+          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
             {verified ? 'verified' : 'pending'}
           </span>
           <div>
-            <p className="text-xs font-bold text-on-surface">
-              {verified ? 'Fayda Identity Verified' : 'Identity check outstanding'}
+            <p className="font-title-md text-[13px] font-bold text-white">
+              {verified ? 'Fayda ID Verified' : 'Identity check outstanding'}
             </p>
-            <p className="text-[11px] text-outline">
-              {verified ? 'Full transfer limits active' : 'Transfers stay blocked until Fayda clears'}
+            <p className="font-body-md text-[11px] text-white/60 mt-0.5">
+              {verified ? 'Instant transfer limits enabled' : 'Transfers pending Fayda verification'}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-3 rounded-xl border border-secondary/10 bg-secondary/5 p-3">
-          <span className="material-symbols-outlined text-secondary" aria-hidden="true">lock_clock</span>
+        <div className="flex items-center gap-3.5 rounded-2xl border border-white/10 bg-white/5 p-4 text-white">
+          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">lock_clock</span>
           <div>
-            <p className="text-xs font-bold text-on-surface">{formatEtb(escrowed)} in escrow</p>
-            <p className="text-[11px] text-outline">Held against pending settlements</p>
+            <p className="font-title-md text-[13px] font-bold text-white">{formatEtb(escrowed)} in escrow</p>
+            <p className="font-body-md text-[11px] text-white/60 mt-0.5">Committed against pending market orders</p>
           </div>
         </div>
       </div>
-      <div className="mt-6 border-t border-outline-variant/10 pt-4">
-        <p className="text-[11px] italic text-outline">
-          Funds settle through the EthSwitch national payment network.
+      <div className="mt-6 border-t border-white/10 pt-4">
+        <p className="font-body-md text-[11px] text-white/50">
+          Funds settle securely via EthSwitch inter-bank network.
         </p>
-      </div>
-    </div>
-  )
-}
-
-function RecentActivity({ transactions, loading }) {
-  return (
-    <div className="mt-section-gap">
-      <div className="mb-8 flex items-center justify-between">
-        <h3 className="text-3xl font-semibold text-on-surface">Recent Funding Activity</h3>
-      </div>
-      <div className="wallet-glass-card overflow-hidden rounded-[24px]">
-        {loading ? (
-          <p className="px-8 py-10 text-sm text-outline">Loading your transaction history…</p>
-        ) : transactions.length === 0 ? (
-          <div className="px-8 py-14 text-center">
-            <span className="material-symbols-outlined mb-3 text-[32px] text-outline-variant" aria-hidden="true">
-              receipt_long
-            </span>
-            <p className="text-sm text-on-surface-variant">
-              No transfers yet. Your first deposit will appear here.
-            </p>
-          </div>
-        ) : (
-          <table className="w-full border-collapse text-left">
-            <thead>
-              <tr className="border-b border-outline-variant/20 bg-surface-container-low/30">
-                {['Date', 'Method', 'Amount', 'Status'].map((col) => (
-                  <th
-                    key={col}
-                    className={`px-8 py-5 text-xs font-bold uppercase tracking-wider text-outline ${
-                      col === 'Amount' ? 'text-right' : col === 'Status' ? 'text-center' : ''
-                    }`}
-                    scope="col"
-                  >
-                    {col}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-outline-variant/10">
-              {transactions.map((tx) => {
-                const recorded = new Date(tx.recorded_at)
-                const isCredit = !['WITHDRAWAL'].includes(tx.type)
-                const tone = STATUS_TONE[tx.status] ?? 'secondary'
-
-                return (
-                  <tr key={tx.transaction_id} className="transition-colors hover:bg-white/40">
-                    <td className="px-8 py-6">
-                      <p className="text-sm text-on-surface">
-                        {recorded.toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
-                      </p>
-                      <p className="text-[11px] text-outline">
-                        {recorded.toLocaleTimeString('en-US', {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </p>
-                    </td>
-                    <td className="px-8 py-6">
-                      <div className="flex items-center gap-3">
-                        <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${isCredit ? 'bg-primary/10' : 'bg-secondary/10'}`}>
-                          <span
-                            className={`material-symbols-outlined text-sm ${isCredit ? 'text-primary' : 'text-secondary'}`}
-                            aria-hidden="true"
-                          >
-                            {isCredit ? 'south_west' : 'north_east'}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="text-sm text-on-surface">
-                            {tx.type.replaceAll('_', ' ').toLowerCase()}
-                          </p>
-                          <p className="text-[11px] text-outline">{tx.payment_network}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-8 py-6 text-right font-bold text-on-surface">
-                      {isCredit ? '+ ' : '- '}
-                      {formatEtb(tx.net_amount_etb)}
-                    </td>
-                    <td className="px-8 py-6 text-center">
-                      <span
-                        className={`rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${
-                          tone === 'primary'
-                            ? 'bg-primary/10 text-primary'
-                            : tone === 'error'
-                              ? 'bg-error/10 text-error'
-                              : 'bg-secondary-container/30 text-secondary'
-                        }`}
-                      >
-                        {tx.status.replaceAll('_', ' ')}
-                      </span>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        )}
       </div>
     </div>
   )
@@ -235,7 +128,7 @@ export default function WalletFundingView({ activeTab }) {
   const navigate = useNavigate()
   const isDeposit = activeTab === 'deposit'
   const { isVerified } = useAuth()
-  const { balance, transactions, loading, error, reload, trackPending } = useWallet()
+  const { balance, loading, error, reload, trackPending } = useWallet()
 
   const [amount, setAmount] = useState('')
   const [channel, setChannel] = useState(DEPOSIT_CHANNELS[0].code)
@@ -268,13 +161,13 @@ export default function WalletFundingView({ activeTab }) {
     if (!amount || Number.isNaN(numericAmount) || numericAmount <= 0) {
       errors.amount = 'Enter an amount greater than zero.'
     } else if (numericAmount < minimum) {
-      errors.amount = `The minimum ${isDeposit ? 'deposit' : 'withdrawal'} is ${minimum} ETB.`
+      errors.amount = `Minimum ${isDeposit ? 'deposit' : 'withdrawal'} is ${minimum} ETB.`
     } else if (!isDeposit && numericAmount > available) {
       errors.amount = `You only have ${formatEtb(available)} available.`
     }
 
     if (!isDeposit && accountNumber.replace(/\D/g, '').length < 10) {
-      errors.accountNumber = 'Enter the full destination account number.'
+      errors.accountNumber = 'Enter destination bank account number.'
     }
 
     setFieldErrors(errors)
@@ -295,18 +188,14 @@ export default function WalletFundingView({ activeTab }) {
     try {
       if (isDeposit) {
         await walletService.deposit({ amountEtb: numericAmount, channel })
-        setNotice(
-          'Deposit initiated. Authorise the payment in your wallet app; your balance updates automatically once the network settles it.',
-        )
+        setNotice('Deposit initiated. Authorize transfer in your wallet app.')
       } else {
         await walletService.withdraw({
           amountEtb: numericAmount,
           bankCode,
           accountNumber: accountNumber.replace(/\s/g, ''),
         })
-        setNotice(
-          'Withdrawal submitted. The amount is held in escrow until your bank confirms the transfer.',
-        )
+        setNotice('Withdrawal submitted. Amount escrowed until bank clears.')
       }
 
       setShowConfirm(false)
@@ -327,52 +216,52 @@ export default function WalletFundingView({ activeTab }) {
   }
 
   return (
-    <div className="mx-auto w-full max-w-container-max flex-1 p-10">
-      <div className="mb-10">
-        <h2 className="text-3xl font-semibold text-on-surface">Wallet &amp; Funding</h2>
-        <p className="mt-2 text-lg text-on-surface-variant">
-          Manage your liquidity and institutional capital transfers.
+    <div className="flex flex-1 flex-col gap-8 font-body-md text-on-surface">
+      <div className="border-b border-white/10 pb-6">
+        <h2 className="font-display-lg text-[32px] sm:text-[40px] font-extrabold text-white leading-tight">
+          Wallet & Liquidity
+        </h2>
+        <p className="mt-1 font-body-md text-[14px] text-white/60">
+          Manage your cash transfers, bank deposits, and withdrawals.
         </p>
       </div>
 
       {(error || notice) && (
-        <div className="mb-8">
+        <div>
           <FormAlert tone={error ? 'error' : 'success'} message={error ?? notice} />
         </div>
       )}
 
-      <div className="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-12">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <FundingOverview balance={balance} loading={loading} />
         </div>
 
         <div className="lg:col-span-4">
-          <div className="wallet-panel h-full p-6">
-            <div className="relative mb-6 flex items-center justify-between border-b border-outline-variant/10 pb-2">
+          <div className="glass-card rounded-[24px] h-full p-7">
+            {/* Tab Switch */}
+            <div className="relative mb-6 flex items-center justify-between border-b border-white/10 pb-3">
               <div className="flex gap-6" role="tablist" aria-label="Transfer type">
                 {['deposit', 'withdraw'].map((tab) => (
                   <button
                     key={tab}
                     aria-selected={activeTab === tab}
-                    className={`relative pb-2 text-xs font-bold uppercase tracking-wider transition-all ${
-                      activeTab === tab ? 'text-primary' : 'text-outline hover:text-on-surface-variant'
+                    className={`relative font-title-md text-[13px] font-bold uppercase tracking-wider transition-all ${
+                      activeTab === tab ? 'text-primary-fixed' : 'text-white/60 hover:text-white'
                     }`}
                     id={`${tab}-tab`}
                     onClick={() => handleTabChange(tab)}
                     role="tab"
                     type="button"
                   >
-                    {tab === 'deposit' ? 'Deposit' : 'Withdraw'}
+                    {tab === 'deposit' ? 'Deposit Cash' : 'Withdraw Cash'}
                     <div
-                      className="absolute bottom-[-9px] left-0 h-0.5 bg-primary transition-all"
+                      className="absolute bottom-[-13px] left-0 h-0.5 bg-primary-fixed chart-glow transition-all"
                       style={{ width: activeTab === tab ? '100%' : '0' }}
                     />
                   </button>
                 ))}
               </div>
-              <span className="material-symbols-outlined text-sm text-outline" aria-hidden="true">
-                swap_vert
-              </span>
             </div>
 
             {formError && (
@@ -382,7 +271,7 @@ export default function WalletFundingView({ activeTab }) {
             )}
 
             <form
-              className="space-y-4"
+              className="space-y-4 font-body-md text-[13px]"
               onSubmit={(e) => {
                 e.preventDefault()
                 openConfirm()
@@ -390,12 +279,12 @@ export default function WalletFundingView({ activeTab }) {
               noValidate
             >
               <div>
-                <label className="mb-2 block text-[11px] font-bold uppercase text-outline" htmlFor="transfer-source">
+                <label className="mb-2 block font-label-sm text-[10px] uppercase text-white/50" htmlFor="transfer-source">
                   {isDeposit ? 'Payment Channel' : 'Destination Bank'}
                 </label>
                 <div className="relative">
                   <select
-                    className="wallet-input appearance-none pr-10"
+                    className="w-full rounded-2xl glass-card border border-white/10 bg-black/40 p-3.5 font-title-md text-[13px] text-white focus:border-primary-fixed/50 focus:outline-none"
                     id="transfer-source"
                     value={isDeposit ? channel : bankCode}
                     onChange={(e) =>
@@ -403,24 +292,21 @@ export default function WalletFundingView({ activeTab }) {
                     }
                   >
                     {(isDeposit ? DEPOSIT_CHANNELS : WITHDRAW_BANKS).map((option) => (
-                      <option key={option.code} value={option.code}>
+                      <option key={option.code} value={option.code} className="bg-[#050505] text-white">
                         {option.label}
                       </option>
                     ))}
                   </select>
-                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-outline" aria-hidden="true">
-                    <span className="material-symbols-outlined">expand_more</span>
-                  </span>
                 </div>
               </div>
 
               {!isDeposit && (
                 <div>
-                  <label className="mb-2 block text-[11px] font-bold uppercase text-outline" htmlFor="destination-account">
-                    Destination Account Number
+                  <label className="mb-2 block font-label-sm text-[10px] uppercase text-white/50" htmlFor="destination-account">
+                    Destination Bank Account
                   </label>
                   <input
-                    className="wallet-input wallet-input-plain"
+                    className="w-full rounded-2xl glass-card border border-white/10 bg-transparent p-3.5 font-title-md text-[13px] text-white placeholder-white/40 focus:border-primary-fixed/50 focus:outline-none"
                     id="destination-account"
                     inputMode="numeric"
                     placeholder="1000123456789"
@@ -432,11 +318,11 @@ export default function WalletFundingView({ activeTab }) {
               )}
 
               <div>
-                <label className="mb-2 block text-[11px] font-bold uppercase text-outline" htmlFor="transfer-amount">
-                  {isDeposit ? 'Amount (ETB)' : 'Amount to Withdraw (ETB)'}
+                <label className="mb-2 block font-label-sm text-[10px] uppercase text-white/50" htmlFor="transfer-amount">
+                  {isDeposit ? 'Deposit Amount (ETB)' : 'Withdrawal Amount (ETB)'}
                 </label>
                 <input
-                  className="wallet-input wallet-input-plain text-xl font-semibold"
+                  className="w-full rounded-2xl glass-card border border-white/10 bg-transparent p-4 font-display-lg text-[22px] font-bold text-white placeholder-white/40 focus:border-primary-fixed/50 focus:outline-none"
                   id="transfer-amount"
                   inputMode="decimal"
                   min={isDeposit ? MINIMUMS.deposit : MINIMUMS.withdraw}
@@ -449,16 +335,35 @@ export default function WalletFundingView({ activeTab }) {
                     setFieldErrors((prev) => ({ ...prev, amount: undefined }))
                   }}
                 />
+
+                {/* Quick Preset Buttons */}
+                <div className="flex gap-2 mt-3">
+                  {[500, 1000, 5000].map((preset) => (
+                    <button
+                      key={preset}
+                      type="button"
+                      onClick={() => setAmount(String(preset))}
+                      className="rounded-full glass-card border border-white/10 px-3 py-1 font-title-md text-[11px] text-white/80 hover:text-black hover:bg-primary-fixed transition-colors"
+                    >
+                      +{preset} ETB
+                    </button>
+                  ))}
+                </div>
+
                 <FieldError message={fieldErrors.amount} />
                 {!isDeposit && (
-                  <p className="mt-2 text-[11px] text-outline">
-                    Available to withdraw: {formatEtb(available)}
+                  <p className="mt-2 font-label-sm text-[10px] text-white/50">
+                    Available balance: {formatEtb(available)}
                   </p>
                 )}
               </div>
 
-              <button className="wallet-btn-primary mt-2" disabled={submitting} type="submit">
-                {isDeposit ? 'Initiate Transfer' : 'Initiate Withdrawal'}
+              <button
+                className="w-full py-4 mt-2 bg-primary-fixed text-on-primary rounded-xl font-title-md text-[13px] font-bold shadow-[0_0_15px_rgba(213,251,69,0.4)] hover:brightness-110 transition-all"
+                disabled={submitting}
+                type="submit"
+              >
+                {isDeposit ? 'CONFIRM DEPOSIT →' : 'CONFIRM WITHDRAWAL →'}
               </button>
             </form>
           </div>
@@ -468,8 +373,6 @@ export default function WalletFundingView({ activeTab }) {
           <SecurityStatus escrowed={balance?.escrowed_balance_etb ?? 0} verified={isVerified} />
         </div>
       </div>
-
-      <RecentActivity transactions={transactions} loading={loading} />
 
       {showConfirm && (
         <ConfirmTransferModal

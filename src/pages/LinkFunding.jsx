@@ -21,8 +21,8 @@ const PROVIDERS = {
     { code: 'WGBETET', name: 'Wegagen Bank' },
   ],
   mobile: [
-    { code: 'TELEBIRR', name: 'Telebirr' },
-    { code: 'CBE_BIRR', name: 'CBE Birr' },
+    { code: 'TELEBIRR', name: 'Telebirr Wallet' },
+    { code: 'CBE_BIRR', name: 'CBE Birr Wallet' },
   ],
 }
 
@@ -77,123 +77,113 @@ export default function LinkFunding() {
     }
   }
 
-  /** Linking is optional; deposits pick a channel at payment time regardless. */
   const skip = () => navigate('/marketplace', { replace: true })
 
   return (
-    <div className="page-shell min-h-screen flex flex-col overflow-x-hidden font-body-md">
-      <header className="dersha-header px-margin-mobile md:px-margin-desktop">
-        <img alt="DERSHA" className="dersha-brand-logo" src="/logo.svg" />
-        <div className="flex items-center gap-4">
-          <button
-            aria-label="Help"
-            className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors"
-            type="button"
-          >
-            help
-          </button>
-          <button
-            aria-label="Wallet"
-            className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors"
-            type="button"
-          >
-            account_balance_wallet
-          </button>
+    <div className="page-shell vortex-grid-bg flex min-h-screen flex-col bg-[#000000] text-[#ffffff]">
+      {/* Header */}
+      <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b-2 border-[#D4FF00] bg-[#000000] px-6 lg:px-10">
+        <Link to="/" className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-[2px] bg-[#D4FF00] font-mono text-base font-black text-[#000000]">
+            D
+          </div>
+          <span className="font-mono text-sm font-black tracking-widest text-[#D4FF00]">DERSHA</span>
+        </Link>
+        <div className="font-mono text-xs text-[#2AFF0A]">
+          ETHSWITCH FUNDING LINK
         </div>
       </header>
 
-      <main className="page-content flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-28 pb-32 flex flex-col items-center">
-        <div className="w-full max-w-2xl mb-12 dersha-animate-in">
+      <main className="flex-1 px-4 py-12 md:px-10 flex flex-col items-center pb-24">
+        <div className="w-full max-w-2xl mb-8">
           <OnboardingStepper currentStep={3} />
         </div>
 
-        <div className="dersha-card w-full max-w-2xl p-8 md:p-12 dersha-animate-in" style={{ animationDelay: '100ms' }}>
-          <header className="text-center mb-10">
-            <h1 className="dersha-heading font-headline-md text-headline-md mb-3">
-              Connect Your Funding Source
+        <div className="vortex-panel w-full max-w-2xl p-8 bg-[#050505] shadow-[8px_8px_0px_#000000]">
+          <header className="mb-6 border-b border-[#D4FF00]/30 pb-4">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#D4FF00]">
+              STEP 03. BANK & WALLET LINKING
+            </span>
+            <h1 className="font-sans text-2xl font-bold uppercase tracking-tight text-[#ffffff]">
+              CONNECT FUNDING SOURCE
             </h1>
-            <p className="dersha-subheading text-on-surface-variant max-w-md mx-auto">
-              Link your local Ethiopian bank account or mobile money wallet to enable instant deposits and payouts via EthSwitch.
+            <p className="font-sans text-xs text-[#a0a0a0] mt-1">
+              Link your Ethiopian bank account or mobile wallet for instant deposits and cash distributions via EthSwitch.
             </p>
           </header>
 
           {error && (
-            <div className="mb-8">
+            <div className="mb-6">
               <FormAlert tone="error" message={error} />
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <button
-              className={`dersha-select-card flex flex-col items-start p-6 text-left group ${
-                fundingType === 'mobile' ? 'dersha-select-card-active' : ''
+              className={`flex flex-col items-start p-5 rounded-[2px] border font-mono text-xs transition-all ${
+                fundingType === 'mobile'
+                  ? 'border-[#D4FF00] bg-[#D4FF00]/10 text-[#ffffff] shadow-[4px_4px_0px_#D4FF00]'
+                  : 'border-white/20 bg-[#000000] text-[#a0a0a0] hover:border-[#D4FF00]'
               }`}
               onClick={() => chooseType('mobile')}
               type="button"
             >
-              <div className="w-12 h-12 rounded-xl bg-surface-variant flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
-                <span className="material-symbols-outlined text-primary" aria-hidden="true" style={{ fontVariationSettings: "'FILL' 1" }}>
-                  account_balance_wallet
-                </span>
+              <div className="mb-2 flex items-center gap-2 text-[#D4FF00]">
+                <span className="material-symbols-outlined text-base">account_balance_wallet</span>
+                <span className="font-bold uppercase tracking-wider">MOBILE MONEY</span>
               </div>
-              <h3 className="font-bold text-lg mb-1 text-on-surface">Mobile Money</h3>
-              <p className="text-sm text-on-surface-variant">Supports Telebirr and CBE Birr wallets.</p>
+              <p className="text-[11px] text-[#8c8c8c]">Telebirr & CBE Birr integrated wallets.</p>
             </button>
 
             <button
-              className={`dersha-select-card flex flex-col items-start p-6 text-left group ${
-                fundingType === 'bank' ? 'dersha-select-card-active' : ''
+              className={`flex flex-col items-start p-5 rounded-[2px] border font-mono text-xs transition-all ${
+                fundingType === 'bank'
+                  ? 'border-[#D4FF00] bg-[#D4FF00]/10 text-[#ffffff] shadow-[4px_4px_0px_#D4FF00]'
+                  : 'border-white/20 bg-[#000000] text-[#a0a0a0] hover:border-[#D4FF00]'
               }`}
               onClick={() => chooseType('bank')}
               type="button"
             >
-              <div className="w-12 h-12 rounded-xl bg-surface-variant flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
-                <span className="material-symbols-outlined text-primary" aria-hidden="true" style={{ fontVariationSettings: "'FILL' 1" }}>
-                  account_balance
-                </span>
+              <div className="mb-2 flex items-center gap-2 text-[#D4FF00]">
+                <span className="material-symbols-outlined text-base">account_balance</span>
+                <span className="font-bold uppercase tracking-wider">COMMERCIAL BANK</span>
               </div>
-              <h3 className="font-bold text-lg mb-1 text-on-surface">Commercial Bank</h3>
-              <p className="text-sm text-on-surface-variant">Powered by EthSwitch network.</p>
+              <p className="text-[11px] text-[#8c8c8c]">CBE, Awash, Dashen via EthSwitch Network.</p>
             </button>
           </div>
 
-          <form className="space-y-6" id="funding-form" onSubmit={handleSubmit} noValidate>
-            <div>
-              <label className="dersha-label mb-2 block" htmlFor="institution">
-                Select Financial Institution
+          <form className="space-y-5" id="funding-form" onSubmit={handleSubmit} noValidate>
+            <div className="space-y-1.5">
+              <label className="font-mono text-xs font-bold uppercase tracking-wider text-[#D4FF00]" htmlFor="institution">
+                SELECT FINANCIAL INSTITUTION
               </label>
-              <div className="relative">
-                <select
-                  className="dersha-input appearance-none pr-12 bg-surface-container-high"
-                  id="institution"
-                  name="institution"
-                  value={providerCode}
-                  onChange={(e) => setProviderCode(e.target.value)}
-                >
-                  <option value="">Choose your provider</option>
-                  {providers.map((provider) => (
-                    <option key={provider.code} value={provider.code}>
-                      {provider.name}
-                    </option>
-                  ))}
-                </select>
-                <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant" aria-hidden="true">
-                  expand_more
-                </span>
-              </div>
+              <select
+                className="vortex-input font-mono text-xs"
+                id="institution"
+                name="institution"
+                value={providerCode}
+                onChange={(e) => setProviderCode(e.target.value)}
+              >
+                <option value="" className="bg-[#000000]">CHOOSE FINANCIAL PROVIDER...</option>
+                {providers.map((provider) => (
+                  <option key={provider.code} value={provider.code} className="bg-[#000000] text-[#ffffff]">
+                    {provider.name}
+                  </option>
+                ))}
+              </select>
               <FieldError message={fieldErrors.provider} />
             </div>
 
-            <div>
-              <label className="dersha-label mb-2 block" htmlFor="account-number">
-                Account or Mobile Wallet Number
+            <div className="space-y-1.5">
+              <label className="font-mono text-xs font-bold uppercase tracking-wider text-[#D4FF00]" htmlFor="account-number">
+                ACCOUNT / WALLET NUMBER
               </label>
               <input
-                className="dersha-input bg-surface-container-high"
+                className="vortex-input font-mono tracking-wider"
                 id="account-number"
                 inputMode="numeric"
                 name="accountNumber"
-                placeholder="e.g. 1000123456789 or 0911…"
+                placeholder="e.g. 1000123456789 or 0911234567"
                 type="text"
                 value={accountNumber}
                 onChange={(e) => setAccountNumber(e.target.value)}
@@ -201,56 +191,41 @@ export default function LinkFunding() {
               <FieldError message={fieldErrors.accountNumber} />
             </div>
 
-            <div className="dersha-info-box">
-              <span className="material-symbols-outlined shrink-0" aria-hidden="true">info</span>
-              <p className="text-sm leading-relaxed">
-                For your security, the name on your bank/wallet account must exactly match your verified Fayda ID name.
-              </p>
+            <div className="rounded-[2px] border border-[#2AFF0A]/40 bg-[#2AFF0A]/10 p-4 font-mono text-xs text-[#2AFF0A] flex items-start gap-3">
+              <span className="material-symbols-outlined text-base">info</span>
+              <span>ACCOUNT NAME MATCH REQUIRED: Bank account name must match your verified Fayda ID name.</span>
             </div>
           </form>
 
-          <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6">
-            <Link className="text-outline hover:text-on-surface transition-colors flex items-center gap-2 font-semibold" to="/identity-verification">
-              <span className="material-symbols-outlined text-sm" aria-hidden="true">arrow_back</span>
-              Back
+          <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-white/10 pt-6 font-mono text-xs">
+            <Link className="text-[#a0a0a0] hover:text-[#ffffff]" to="/identity-verification">
+              ← BACK
             </Link>
 
-            <div className="flex flex-col-reverse md:flex-row items-center gap-4 w-full md:w-auto">
+            <div className="flex items-center gap-4 w-full md:w-auto">
               <button
-                className="text-outline hover:text-on-surface transition-colors font-semibold"
+                className="text-[#8c8c8c] hover:text-[#D4FF00]"
                 onClick={skip}
                 type="button"
               >
-                Skip for now
+                SKIP FOR NOW
               </button>
               <button
-                className="dersha-btn dersha-btn-primary px-8 py-4 text-lg w-full md:w-auto text-center"
+                className="vortex-btn-primary py-3.5 px-6"
                 disabled={submitting}
                 form="funding-form"
                 type="submit"
               >
-                {submitting ? 'Linking…' : 'Complete Onboarding & Enter Marketplace'}
+                {submitting ? 'LINKING...' : 'COMPLETE & ENTER MARKETPLACE →'}
               </button>
             </div>
           </div>
         </div>
-
-        <div className="mt-12 flex items-center gap-8 opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-sm" aria-hidden="true">security</span>
-            <span className="dersha-eyebrow text-[10px]">PCI-DSS Compliant</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-sm" aria-hidden="true">lock</span>
-            <span className="dersha-eyebrow text-[10px]">ECMA Regulated</span>
-          </div>
-        </div>
       </main>
 
-      <div className="page-atmosphere -z-20" />
-
-      <div className="dersha-ticker">
-        <div className="flex animate-marquee whitespace-nowrap gap-12 text-[10px] font-mono text-outline uppercase tracking-widest h-full items-center">
+      {/* Telemetry Ticker Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 h-8 border-t-2 border-[#D4FF00] bg-[#000000] font-mono text-[11px] text-[#D4FF00] flex items-center overflow-hidden">
+        <div className="flex animate-marquee whitespace-nowrap gap-12 px-4">
           {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, index) => (
             <span key={index}>{item}</span>
           ))}

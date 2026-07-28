@@ -1,4 +1,5 @@
 import { useAuth } from '../../context/AuthContext'
+import { useTheme } from '../../context/ThemeContext'
 import { titleCase } from '../../lib/format'
 
 function initialsOf(name) {
@@ -10,81 +11,120 @@ function initialsOf(name) {
     .join('')
 }
 
-export default function AppHeader({ onMenuClick }) {
+export default function AppHeader({ onMenuClick, isCollapsed, onToggleCollapse }) {
   const { user, logout } = useAuth()
-  const name = user?.full_name_raw ?? 'Your account'
+  const { isDark, isPearl, toggleTheme } = useTheme()
+  const name = user?.full_name_raw ?? 'David Owner'
   const status = user?.account_status
     ? titleCase(user.account_status.replace(/_/g, ' '))
-    : ''
+    : 'VERIFIED INVESTOR'
 
   return (
-    <header className="sticky top-0 z-30 flex h-20 items-center justify-between gap-4 border-b border-outline-variant/30 bg-[#f7f9fb]/80 px-4 backdrop-blur-xl md:px-10">
+    <header className={`fixed top-0 right-0 z-40 flex h-20 w-full transition-all duration-300 ${
+      isCollapsed ? 'lg:w-[calc(100%-80px)]' : 'lg:w-[calc(100%-260px)]'
+    } items-center justify-between gap-4 px-4 sm:px-6 md:px-8 py-3 bg-transparent backdrop-blur-md`}>
       <div className="flex min-w-0 flex-1 items-center gap-3">
+        {/* Mobile menu button */}
         <button
           aria-label="Open navigation"
-          className="-ml-1 shrink-0 rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container-high lg:hidden"
+          className="w-10 h-10 rounded-full glass-card flex items-center justify-center text-on-surface-variant hover:text-white transition-colors lg:hidden shrink-0"
           onClick={onMenuClick}
           type="button"
         >
-          <span className="material-symbols-outlined" aria-hidden="true">
+          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
             menu
           </span>
         </button>
 
-        <div className="flex min-w-0 max-w-96 flex-1 items-center rounded-full border border-outline-variant/10 bg-surface-container-low px-4 py-2">
-          <span className="material-symbols-outlined text-outline" aria-hidden="true">
+        {/* Desktop sidebar toggle button */}
+        {onToggleCollapse && (
+          <button
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            className="hidden lg:flex w-10 h-10 rounded-full glass-card items-center justify-center text-on-surface-variant hover:text-white transition-all shrink-0"
+            onClick={onToggleCollapse}
+            type="button"
+          >
+            <span className="material-symbols-outlined text-[20px]">
+              {isCollapsed ? 'menu_open' : 'menu'}
+            </span>
+          </button>
+        )}
+
+        {/* Search Bar */}
+        <div className="relative flex items-center w-full max-w-xl h-12 rounded-full glass-card overflow-hidden focus-within:border-primary-fixed/50 transition-colors">
+          <span className="material-symbols-outlined text-on-surface-variant pl-4 text-[20px]">
             search
           </span>
           <input
-            aria-label="Search assets, baskets, or history"
-            className="ml-2 w-full min-w-0 border-none bg-transparent text-sm text-on-surface focus:outline-none focus:ring-0"
-            placeholder="Search assets, baskets, or history"
-            type="search"
+            className="w-full bg-transparent border-none text-white focus:ring-0 px-3 font-body-md text-[14px] placeholder-on-surface-variant/50 outline-none"
+            placeholder="Search Here..."
+            type="text"
           />
+          <div className="mr-2 px-2.5 py-1 bg-white/10 rounded-md shrink-0">
+            <span className="font-label-sm text-[10px] text-on-surface-variant">⌘K</span>
+          </div>
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2 md:gap-6">
-        {['help', 'settings'].map((icon) => (
-          <button
-            key={icon}
-            aria-label={icon}
-            className="hidden rounded-full p-2 text-on-surface-variant transition-all hover:bg-surface-container-high md:block"
-            type="button"
-          >
-            <span className="material-symbols-outlined" aria-hidden="true">
-              {icon}
-            </span>
-          </button>
-        ))}
+      <div className="flex shrink-0 items-center gap-2.5">
+        {/* Theme switch button: 3-state cycle dark → light → pearl → dark */}
         <button
-          aria-label="Notifications"
-          className="relative rounded-full p-2 text-on-surface-variant transition-all hover:bg-surface-container-high"
+          onClick={toggleTheme}
+          aria-label={
+            isDark ? 'Switch to Graphite Light' : isPearl ? 'Switch to Dark Mode' : 'Switch to Pearl Light'
+          }
+          title={
+            isDark ? 'Switch to Graphite Light' : isPearl ? 'Switch to Dark Mode' : 'Switch to Pearl Light'
+          }
+          className={`h-10 px-3 rounded-full glass-card flex items-center gap-1.5 hover:scale-105 transition-all shadow-md shrink-0 ${
+            isPearl
+              ? 'text-[#2563eb] border border-[#2563eb]/30'
+              : 'text-primary-fixed'
+          }`}
           type="button"
         >
-          <span className="material-symbols-outlined" aria-hidden="true">
-            notifications
+          <span className="material-symbols-outlined text-[20px]">
+            {isDark ? 'light_mode' : isPearl ? 'dark_mode' : 'wb_sunny'}
           </span>
-          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-error" />
+          <span className={`font-label-sm text-[9px] font-bold uppercase tracking-wider hidden sm:inline ${isPearl ? 'text-[#2563eb]' : 'text-primary-fixed'}`}>
+            {isDark ? 'GRAPHITE' : isPearl ? 'OBSIDIAN' : 'PEARL'}
+          </span>
         </button>
-        <div className="flex items-center gap-3 border-outline-variant/30 md:border-l md:pl-6">
-          <div className="hidden text-right sm:block">
-            <p className="text-sm font-medium text-on-surface">{name}</p>
-            <p className="text-[12px] text-outline">{status}</p>
-          </div>
-          <span
-            aria-hidden="true"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-primary/20 bg-secondary-container text-sm font-bold text-on-secondary-container"
-          >
+
+        {/* Notification & Chat action buttons */}
+        <button
+          aria-label="Chat"
+          className="w-10 h-10 rounded-full glass-card flex items-center justify-center text-on-surface-variant hover:text-white transition-colors hidden sm:flex"
+          type="button"
+        >
+          <span className="material-symbols-outlined text-[20px]">chat</span>
+        </button>
+
+        <button
+          aria-label="Notifications"
+          className="w-10 h-10 rounded-full glass-card flex items-center justify-center text-on-surface-variant hover:text-white transition-colors relative"
+          type="button"
+        >
+          <span className="material-symbols-outlined text-[20px]">notifications</span>
+          <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary-fixed chart-glow" />
+        </button>
+
+        {/* User Profile Pill */}
+        <div className="flex items-center gap-3 pl-2 pr-3 py-1.5 rounded-full glass-card">
+          <div className="w-8 h-8 rounded-full bg-primary-fixed text-on-primary flex items-center justify-center font-title-md text-[13px] font-bold shadow-[0_0_10px_rgba(213,251,69,0.4)] shrink-0">
             {initialsOf(name)}
-          </span>
+          </div>
+          <div className="text-left leading-tight hidden md:block">
+            <div className="font-title-md text-[13px] text-white font-medium">{name}</div>
+            <div className="font-label-sm text-[10px] text-primary-fixed uppercase tracking-wider">{status}</div>
+          </div>
           <button
-            aria-label="Sign out"
-            className="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container-high"
+            aria-label="Log out"
+            className="rounded-full p-1 text-on-surface-variant hover:text-white hover:bg-white/10 transition-colors"
             onClick={logout}
             type="button"
           >
-            <span className="material-symbols-outlined" aria-hidden="true">
+            <span className="material-symbols-outlined text-lg" aria-hidden="true">
               logout
             </span>
           </button>

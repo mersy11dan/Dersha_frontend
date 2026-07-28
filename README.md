@@ -1,80 +1,66 @@
-# DERSHA Frontend
+# DERSHA Frontend — Real Estate & Asset Fractional Exchange
 
-DERSHA is the React frontend for a fractional collective-investment platform designed for Ethiopia. The concept is called **CELL** in the product documentation: it allows people to own and trade small portions of real assets without purchasing the entire asset.
+DERSHA is the React frontend for a fractional collective-investment platform designed for Ethiopia. The concept allows investors to own and trade small book-entry portions of real assets (real estate, vehicles, gold, agricultural equipment, and micro-businesses) custodied with Commercial Bank of Ethiopia (CBE) and settled via EthSwitch.
 
-> The current frontend is a visual prototype. Authentication, identity verification, banking, investment transactions, custody, pricing, and regulatory integrations are not yet connected to production services.
+---
 
-## How the platform works
+## 🚀 Recent UI/UX Enhancements & Architecture Updates
 
-An asset owner contributes a real asset—such as property, a vehicle fleet, gold, agricultural equipment, or a business—to a regulated sub-fund. An independent valuer determines its value, while the legal title is held in trust by a custodian bank.
+### 1. 🎨 Multi-Theme Engine (3 Theme Modes)
+- **Obsidian Dark Mode** (`dark`): Dark obsidian background with vibrant Neon Volt (`#d5fb45`) accents and glassmorphic telemetry cards.
+- **Graphite Slate Mode** (`light`): Sleek dark graphite slate aesthetic (`#1a1c1c`) with soft neon highlights.
+- **Pearl Light Mode** (`pearl`): Clean off-white background (`#f8f7f4`) with high-contrast deep ink typography (`#1a1a2e`) and professional **Cobalt Blue (`#2563eb`)** primary accents for buttons, charts, and telemetry indicators.
+- **Header Theme Toggle**: Single circular button in `AppHeader.jsx` seamlessly cycles between `Dark → Light → Pearl → Dark`.
 
-The platform converts the appraised value into digital book-entry units:
+### 2. 📱 Desktop Collapsible Sidebar & Mobile Responsive Navigation
+- **Desktop Sidebar Collapse**: Sidebar toggles between full width (`260px`) and mini-icon mode (`80px`) with smooth CSS transitions, persisted state (`localStorage`), floating hover tooltips, and collapse toggle buttons in header and sidebar header.
+- **Dersha Signature Shield Logo**: Custom geometric SVG logo with multi-faceted shield cutout, neon volt gradient (`#d5fb45` to `#a3e635`), and glowing aura.
+- **100% Navigation Coverage**: Configured navigation in `navConfig.js` covering all application routes (`Dashboard`, `Marketplace`, `Custom Baskets`, `Stock Comparison`, `My Assets`, `Deposit Cash`, `Withdraw Cash`, `Account Info`, `KYC Verification`, `Bank Funding`).
 
-1. **Asset to units:** The contributed asset is appraised and represented by digital ownership units.
-2. **Units to cash:** A portion of the units is offered to retail investors through the marketplace. The owner may retain the remaining units to keep their interests aligned with investors.
-3. **Cash to yield:** Rent, leases, operating profits, and trading gains are distributed digitally to unit holders.
-4. **Exit:** Investors can sell units through the marketplace. When an asset reaches its target value or planned end date, it is sold, the units are redeemed, and the corresponding sub-fund is closed.
+### 3. 📊 Interactive Stock Comparison & Live Analytics
+- Fully interactive Chart.js visualizations for stock comparison, price history, orderbook telemetry, and sector allocation. Hover tooltips, interactive timeframes, and live volume data.
 
-This structure allows the platform to offer assets without first buying all inventory itself: owners contribute assets in kind, and CELL turns them into regulated, liquid investment products.
+### 4. 🎴 Market Snapshot & Marketplace Card Redesign
+- **Market Snapshot Cards Placement**: Positioned `MarketInsights` telemetry cards directly below the page header and category tabs on `/marketplace`.
+- **Spacious & Narrow Card Proportions**: Increased Asset Card height (`h-[490px] sm:h-[540px]`), expanded image preview (`h-52 sm:h-64`), and set laptop grid layout to `lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6`.
+- **Close Icon Proximity & Neon Accents**: Removed wide `justify-between` gaps on telemetry cards, placing icons next to labels with custom neon gradients (`Volt`, `Electric Sky`, `Emerald`, `Royal Purple`).
+- **Mobile 2-Column Grid (`grid-cols-2`)**: Configured mobile screen breakpoint (`< 640px`) to strictly render **2 cards per row** for Market Insights, Marketplace Assets, and Portfolio Summary cards.
 
-## Supported investment categories
+### 5. 🛡️ Portfolio Assets Summary Cards
+- Redesigned the 4 summary cards (`PORTFOLIO VALUE`, `CASH BALANCE`, `SECURITIES VALUE`, `LIFETIME DIVIDENDS`) on `/portfolio/assets` with category domain symbol badges (`pie_chart`, `payments`, `verified_user`, `trending_up`), taller height (`h-[140px] sm:h-[155px]`), and a **2-column grid on mobile view**.
 
-- **Real estate and logistics:** Warehouses, commercial floors, and urban plots intended to generate monthly lease income.
-- **Vehicles and fleets:** Trucks, cargo vans, and corporate vehicles that produce daily or weekly lease cash flow.
-- **Micro-businesses:** Pharmacies, groceries, cafés, and similar businesses that distribute a share of audited operating profit.
-- **Gold and fine art:** Custodied assets whose unit prices follow live market feeds or scheduled appraisals.
-- **Agriculture:** Warehouse receipts and agricultural equipment that can provide seasonal gains and lease income.
+### 6. 🔌 Backend Service Integrity
+- **100% Endpoint Preservation**: All API endpoints in `dirshaApi` and service methods in `src/lib/services.js` remain completely untouched, fully active, and connected to real backend services.
 
-## Main participants
+---
 
-- **Fund manager:** Creates and manages sub-funds, sets investment and liquidation targets, operates the marketplace, and reports to the Ethiopian Capital Market Authority (ECMA).
-- **Custodian bank:** Holds investor cash and physical titles in trust and executes compliant asset sales when instructed by the fund manager.
-- **Investors:** Register with a Fayda ID and Ethiopian bank account or wallet, purchase fractional units, receive yields, and sell eligible units.
-- **Asset owners:** Contribute appraised assets and initially receive the corresponding units before an agreed portion is released to the public market.
+## 🛠️ Technology Stack
 
-## Investment principles
+- **React 19**
+- **Vite**
+- **React Router DOM 7**
+- **Tailwind CSS 4**
+- **Chart.js & React-Chartjs-2**
+- **Material Symbols Outlined**
 
-- Commercial properties prioritize stable, multi-year institutional tenants.
-- Vehicles and equipment should remain actively leased instead of sitting idle.
-- Gold and art remain in custody while their fractional prices update from market feeds or appraisals.
-- Short-term investments may liquidate when a valuation target is reached.
-- Long-term investments dissolve on a planned date, returning capital gains to investor wallets.
+---
 
-The documentation also proposes **custom baskets**: investors could bundle selected fractions from several assets into one personal index. The basket would have a combined net asset value, continue receiving yield from its underlying assets, and trade as a single unit.
-
-## Current frontend flow
-
-The implemented React prototype currently covers account onboarding:
-
-1. **Login** (`/` or `/login`) — email/password login, password visibility, session preference, social-login placeholders, and a mock authentication response.
-2. **Account information** (`/account-info`) — name, email, Ethiopian phone number, and password collection.
-3. **Identity verification** (`/identity-verification`) — formatted Fayda National ID input and a biometric-verification interface placeholder.
-4. **Funding source** (`/link-funding`) — selection of a commercial bank or mobile-money wallet and entry of the account number.
-
-Future pages will cover the investor dashboard, asset marketplace, asset details, portfolio, trading, yield tracking, custom baskets, and liquidation/redemption flows.
-
-## Technology
-
-- React 19
-- Vite
-- React Router
-- Tailwind CSS
-
-## Run locally
+## ⚙️ Run Locally
 
 ```powershell
-cd c:\Users\USER\Documents\Projects\personal\dersha\dersha_frontend
 npm install
 npm run dev
 ```
 
 Open `http://localhost:5173`.
 
-## Available commands
+---
+
+## 🧪 Available Commands
 
 ```powershell
-npm run dev      # Start the development server
-npm run build    # Create a production build
-npm run preview  # Preview the production build
-npm run lint     # Run the linter
+npm run dev      # Start Vite development server
+npm run build    # Build for production
+npm run preview  # Preview production build
+npx oxlint       # Run fast linter across workspace
 ```

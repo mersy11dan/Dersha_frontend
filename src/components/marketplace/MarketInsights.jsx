@@ -1,134 +1,86 @@
-import { categoryIcon, categoryLabel, formatEtbCompact } from '../../lib/format'
+import { formatEtbCompact } from '../../lib/format'
 
-/**
- * Live market summary. Sector weights are computed from the listed sub-funds
- * themselves rather than a separate endpoint, so they can never disagree with
- * the grid beside them.
- */
 export default function MarketInsights({ highlights, assets = [], loading }) {
-  const sectors = sectorWeights(assets)
-  const movers = [...assets]
+  const topGainer = [...assets]
     .filter((asset) => asset.price_change_24h_percentage !== null)
-    .sort((a, b) => b.price_change_24h_percentage - a.price_change_24h_percentage)
-    .slice(0, 3)
+    .sort((a, b) => b.price_change_24h_percentage - a.price_change_24h_percentage)[0]
 
   const tiles = [
     {
       id: 'tvl',
-      label: 'Total value locked',
+      icon: 'lock',
+      label: 'Total Value Locked',
       value: formatEtbCompact(highlights?.total_value_locked_etb),
-      detail: `${highlights?.listed_sub_funds ?? 0} listed sub-funds`,
+      detail: `${highlights?.listed_sub_funds ?? 0} Listed Sub-Funds`,
+      textStyle: 'text-primary-fixed',
+      badgeBg: 'bg-primary-fixed/15 border-primary-fixed/30 text-primary-fixed',
+      cardBg: 'from-[#d5fb45]/10 via-transparent to-transparent',
     },
     {
       id: 'volume',
-      label: '24h volume',
+      icon: 'monitoring',
+      label: '24h Trading Volume',
       value: formatEtbCompact(highlights?.volume_24h_etb),
-      detail: `${highlights?.trades_24h ?? 0} trades settled`,
+      detail: `${highlights?.trades_24h ?? 0} Trades Settled`,
+      textStyle: 'text-[#38bdf8]',
+      badgeBg: 'bg-[#38bdf8]/15 border-[#38bdf8]/30 text-[#38bdf8]',
+      cardBg: 'from-[#38bdf8]/10 via-transparent to-transparent',
+    },
+    {
+      id: 'gainer',
+      icon: 'trending_up',
+      label: 'Top Asset Gainer',
+      value: topGainer ? `${topGainer.price_change_24h_percentage > 0 ? '+' : ''}${topGainer.price_change_24h_percentage.toFixed(2)}%` : '—',
+      detail: topGainer ? topGainer.asset_name : 'Market Stabilized',
+      textStyle: 'text-[#34d399]',
+      badgeBg: 'bg-[#34d399]/15 border-[#34d399]/30 text-[#34d399]',
+      cardBg: 'from-[#34d399]/10 via-transparent to-transparent',
+    },
+    {
+      id: 'custody',
+      icon: 'verified_user',
+      label: 'CBE Custody Status',
+      value: 'ACTIVE',
+      detail: 'EthSwitch Settlement Ready',
+      textStyle: 'text-[#c084fc]',
+      badgeBg: 'bg-[#c084fc]/15 border-[#c084fc]/30 text-[#c084fc]',
+      cardBg: 'from-[#c084fc]/10 via-transparent to-transparent',
     },
   ]
 
   return (
-    <div className="flex flex-col gap-8">
-      <section>
-        <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-outline">
-          Market snapshot
-        </h2>
-        <div className="flex flex-col gap-3">
-          {tiles.map((tile) => (
-            <div key={tile.id} className="wallet-panel p-4">
-              <p className="text-xs text-outline">{tile.label}</p>
-              <p className="mt-1 text-2xl font-bold text-on-surface">
-                {loading ? '—' : tile.value}
-              </p>
-              <p className="mt-1 text-xs text-on-surface-variant">{tile.detail}</p>
+    <div className="mb-6">
+      {/* 2-column grid on mobile (grid-cols-2), 4-column grid on desktop (md:grid-cols-4) */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        {tiles.map((tile) => (
+          <div
+            key={tile.id}
+            className={`glass-card bg-gradient-to-br ${tile.cardBg} rounded-[24px] p-3.5 sm:p-4.5 border border-white/15 flex flex-col justify-between h-[140px] sm:h-[155px] hover:border-white/30 transition-all duration-300 relative overflow-hidden group shadow-lg`}
+          >
+            {/* Top row: Label + Icon Badge close together */}
+            <div className="flex items-start justify-between gap-2 z-10">
+              <span className="font-label-sm text-[9px] sm:text-[10px] text-white/70 uppercase tracking-wider font-bold max-w-[110px] leading-tight">
+                {tile.label}
+              </span>
+              <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl border flex items-center justify-center shrink-0 shadow-md ${tile.badgeBg}`}>
+                <span className="material-symbols-outlined text-[18px] sm:text-[20px]">
+                  {tile.icon}
+                </span>
+              </div>
             </div>
-          ))}
-        </div>
-      </section>
 
-      <section>
-        <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-outline">
-          Today's movers
-        </h2>
-        {movers.length === 0 ? (
-          <p className="text-sm text-on-surface-variant">
-            No price moves yet. Changes appear once assets trade against a previous mark.
-          </p>
-        ) : (
-          <ul className="flex flex-col gap-3">
-            {movers.map((asset) => (
-              <li key={asset.sub_fund_id} className="flex items-center justify-between gap-3">
-                <span className="min-w-0 truncate text-sm text-on-surface">
-                  {asset.asset_name}
-                </span>
-                <span
-                  className={`shrink-0 text-sm font-bold ${
-                    asset.price_change_24h_percentage >= 0 ? 'text-primary' : 'text-error'
-                  }`}
-                >
-                  {asset.price_change_24h_percentage > 0 ? '+' : ''}
-                  {asset.price_change_24h_percentage.toFixed(2)}%
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <section>
-        <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-outline">
-          Sector weight
-        </h2>
-        {sectors.length === 0 ? (
-          <p className="text-sm text-on-surface-variant">Nothing listed yet.</p>
-        ) : (
-          <ul className="flex flex-col gap-4">
-            {sectors.map((sector) => (
-              <li key={sector.category}>
-                <div className="mb-1.5 flex items-center justify-between text-sm">
-                  <span className="flex items-center gap-2 text-on-surface">
-                    <span
-                      aria-hidden="true"
-                      className="material-symbols-outlined text-[18px] text-primary"
-                    >
-                      {categoryIcon(sector.category)}
-                    </span>
-                    {categoryLabel(sector.category)}
-                  </span>
-                  <span className="font-semibold text-on-surface-variant">
-                    {sector.share.toFixed(0)}%
-                  </span>
-                </div>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-surface-container-high">
-                  <div
-                    className="h-full rounded-full bg-primary"
-                    style={{ width: `${sector.share}%` }}
-                  />
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+            {/* Bottom row: Bold Value + Subtext */}
+            <div className="z-10 mt-auto">
+              <div className={`font-display-lg text-[20px] sm:text-[26px] font-black tracking-tight leading-none ${tile.textStyle}`}>
+                {loading ? '—' : tile.value}
+              </div>
+              <p className="mt-1 font-body-md text-[11px] sm:text-[12px] text-white/70 truncate">
+                {tile.detail}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
-}
-
-/** Share of total market capitalisation held by each sector. */
-function sectorWeights(assets) {
-  const totals = new Map()
-  let overall = 0
-
-  for (const asset of assets) {
-    const value = Number(asset.market_capitalisation_etb ?? 0)
-    totals.set(asset.category, (totals.get(asset.category) ?? 0) + value)
-    overall += value
-  }
-
-  if (overall <= 0) return []
-
-  return [...totals.entries()]
-    .map(([category, value]) => ({ category, share: (value / overall) * 100 }))
-    .sort((a, b) => b.share - a.share)
-    .slice(0, 5)
 }

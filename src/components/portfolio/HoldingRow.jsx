@@ -2,101 +2,76 @@ import { Link } from 'react-router-dom'
 import {
   categoryIcon,
   categoryLabel,
-  changeTone,
-  formatDate,
   formatEtb,
   formatPercentage,
   formatShares,
 } from '../../lib/format'
 
 export default function HoldingRow({ holding }) {
-  const locked = holding.vesting_locked_shares > 0
+  const isPositive = (holding.unrealised_gain_etb ?? 0) >= 0
 
   return (
-    <article className="wallet-panel p-5 transition-colors hover:border-primary/40">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex min-w-0 gap-4">
-          <span
-            aria-hidden="true"
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"
-          >
-            <span className="material-symbols-outlined text-[22px]">
+    <article className="group glass-card rounded-[24px] sm:rounded-[28px] p-3.5 sm:p-5 flex flex-col justify-between hover:border-primary-fixed/50 hover:shadow-[0_12px_30px_rgba(213,251,69,0.12)] transition-all duration-300 min-w-0">
+      <div>
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-primary-fixed/15 border border-primary-fixed/30 flex items-center justify-center text-primary-fixed shrink-0 shadow-md">
+            <span className="material-symbols-outlined text-[18px] sm:text-[22px]">
               {categoryIcon(holding.category)}
             </span>
-          </span>
-          <div className="min-w-0">
-            <div className="mb-1 flex flex-wrap items-center gap-2">
-              <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
-                {categoryLabel(holding.category)}
-              </span>
-              {holding.location && (
-                <span className="truncate text-xs text-outline">{holding.location}</span>
-              )}
-            </div>
-            <h3 className="truncate text-lg font-semibold text-on-surface">
-              {holding.asset_name}
-            </h3>
-            <p className="mt-0.5 text-sm text-on-surface-variant">
-              {formatShares(holding.shares_owned)} shares ·{' '}
-              {formatPercentage(holding.ownership_percentage, 4)} of the sub-fund
-            </p>
           </div>
+          <span className="bg-white/10 text-white/90 border border-white/15 px-2.5 py-0.5 rounded-full font-label-sm text-[8px] sm:text-[9px] font-bold uppercase truncate max-w-[120px]">
+            {categoryLabel(holding.category)}
+          </span>
         </div>
 
-        <div className="shrink-0 text-left sm:text-right">
-          <p className="text-xs text-outline">Market value</p>
-          <p className="text-xl font-bold text-on-surface">
-            {formatEtb(holding.market_value_etb, { decimals: 2 })}
-          </p>
-          <p
-            className={`text-sm font-semibold ${changeTone(holding.unrealised_gain_etb)}`}
-          >
-            {holding.unrealised_gain_etb >= 0 ? '+' : ''}
-            {formatEtb(holding.unrealised_gain_etb, { decimals: 2 })} (
-            {holding.unrealised_gain_percentage >= 0 ? '+' : ''}
-            {formatPercentage(holding.unrealised_gain_percentage)})
+        <div className="mb-3">
+          <h3 className="truncate font-title-md text-[14px] sm:text-[17px] font-extrabold text-white group-hover:text-primary-fixed transition-colors">
+            {holding.asset_name}
+          </h3>
+          <p className="flex items-center gap-1 truncate font-body-md text-[11px] sm:text-[12px] text-slate-300 mt-0.5">
+            <span className="material-symbols-outlined text-[13px] text-primary-fixed shrink-0">location_on</span>
+            <span className="truncate">{holding.location || 'Ethiopia Main Exchange'}</span>
           </p>
         </div>
+
+        <dl className="grid grid-cols-2 gap-2 rounded-xl sm:rounded-2xl bg-white/5 border border-white/10 p-2.5 sm:p-3 font-body-md mb-3">
+          <div className="min-w-0">
+            <dt className="font-label-sm text-[8px] sm:text-[9px] text-slate-400 uppercase tracking-wider truncate">HOLDINGS</dt>
+            <dd className="font-title-md text-[12px] sm:text-[13px] text-white font-extrabold mt-0.5 truncate">
+              {formatShares(holding.shares_owned)}
+            </dd>
+          </div>
+          <div className="min-w-0">
+            <dt className="font-label-sm text-[8px] sm:text-[9px] text-slate-400 uppercase tracking-wider truncate">SHARE OF FUND</dt>
+            <dd className="font-title-md text-[11px] sm:text-[12px] text-sky-400 font-bold mt-0.5 truncate">
+              {formatPercentage(holding.ownership_percentage, 2)}
+            </dd>
+          </div>
+        </dl>
       </div>
 
-      <div className="mt-5 flex flex-wrap items-end justify-between gap-4 border-t border-outline-variant/20 pt-4">
-        <dl className="flex flex-wrap gap-x-8 gap-y-3">
-          <Stat
-            label="Mark price"
-            value={formatEtb(holding.price_per_share_etb, { decimals: 2 })}
-          />
-          <Stat
-            label="Issue price"
-            value={formatEtb(holding.nominal_price_per_share_etb, { decimals: 2 })}
-          />
-          <Stat label="Tradable" value={formatShares(holding.tradable_shares)} />
-          {locked && (
-            <Stat
-              label="Vesting"
-              tone="text-secondary"
-              value={`${formatShares(holding.vesting_locked_shares)} until ${formatDate(
-                holding.vesting_unlock_at,
-              )}`}
-            />
-          )}
-        </dl>
+      <div className="pt-2.5 border-t border-white/10 flex items-center justify-between gap-1.5 min-w-0">
+        <div className="min-w-0 flex-1">
+          <p className="font-label-sm text-[8px] sm:text-[9px] text-slate-400 uppercase tracking-wider truncate">
+            MARKET VALUE
+          </p>
+          <p className="font-display-lg text-[13px] sm:text-[16px] font-black text-white truncate">
+            {formatEtb(holding.market_value_etb, { decimals: 0 })}
+          </p>
+          <p className={`font-title-md text-[10px] sm:text-[12px] font-bold truncate ${isPositive ? 'text-primary-fixed' : 'text-[#FF3B30]'}`}>
+            {holding.unrealised_gain_etb >= 0 ? '+' : ''}
+            {formatEtb(holding.unrealised_gain_etb, { decimals: 0 })} ({holding.unrealised_gain_percentage >= 0 ? '+' : ''}{formatPercentage(holding.unrealised_gain_percentage)})
+          </p>
+        </div>
 
         <Link
-          className="h-10 shrink-0 rounded-xl border border-primary px-6 text-sm font-bold leading-10 text-primary transition-colors hover:bg-primary hover:text-on-primary"
+          className="px-3 sm:px-4 py-1.5 sm:py-2 bg-primary-fixed text-on-primary rounded-xl font-title-md text-[11px] sm:text-[12px] font-black shadow-[0_0_12px_rgba(213,251,69,0.3)] hover:brightness-110 transition-all flex items-center gap-1 shrink-0"
           to={`/marketplace/assets/${holding.sub_fund_id}`}
         >
-          Trade
+          <span>TRADE</span>
+          <span className="material-symbols-outlined text-[13px] sm:text-[15px] leading-none">arrow_forward</span>
         </Link>
       </div>
     </article>
-  )
-}
-
-function Stat({ label, value, tone = 'text-on-surface' }) {
-  return (
-    <div>
-      <dt className="text-xs text-outline">{label}</dt>
-      <dd className={`text-sm font-bold ${tone}`}>{value}</dd>
-    </div>
   )
 }

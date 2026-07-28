@@ -7,9 +7,9 @@ const CATEGORY_LABELS = {
   AGRICULTURE: 'Agriculture',
   INFRASTRUCTURE: 'Infrastructure',
   LOGISTICS_VEHICLE: 'Logistics',
-  COMMODITY_GOLD: 'Gold',
+  COMMODITY_GOLD: 'Gold & Metals',
   MICRO_BUSINESS: 'Micro Business',
-  FINE_ART: 'Fine Art',
+  FINE_ART: 'Fine Art & Culture',
 }
 
 const CATEGORY_ICONS = {
@@ -27,7 +27,7 @@ export const CATEGORY_KEYS = Object.keys(CATEGORY_LABELS)
 export const categoryLabel = (category) =>
   CATEGORY_LABELS[category] ?? titleCase(category ?? '')
 
-export const categoryIcon = (category) => CATEGORY_ICONS[category] ?? 'category'
+export const categoryIcon = (category) => CATEGORY_ICONS[category] ?? 'token'
 
 export function titleCase(value) {
   return String(value)

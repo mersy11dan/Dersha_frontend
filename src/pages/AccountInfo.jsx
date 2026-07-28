@@ -38,8 +38,6 @@ export default function AccountInfo() {
     setError(null)
     setFieldErrors({})
 
-    // The API expects a single E.164 string; the UI collects the code and the
-    // subscriber number separately.
     const localNumber = form.phone.replace(/\D/g, '')
     const phoneNumber = `${form.countryCode}${localNumber}`
 
@@ -67,44 +65,81 @@ export default function AccountInfo() {
   }
 
   return (
-    <div className="page-shell min-h-screen flex flex-col overflow-x-hidden font-body-md">
-      <header className="dersha-header px-margin-mobile md:px-margin-desktop">
-        <img alt="DERSHA" className="dersha-brand-logo" src="/logo.svg" />
-        <button
-          aria-label="Help"
-          className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-lg p-1"
-          type="button"
-        >
-          help
-        </button>
-      </header>
+    <div className="min-h-screen bg-[#000000] text-[#ffffff] grid grid-cols-1 lg:grid-cols-2">
+      {/* LEFT COLUMN: 4K HIGH-RES VISUAL PANEL */}
+      <div className="hidden lg:relative lg:flex flex-col justify-between p-12 border-r-2 border-[#D4FF00] overflow-hidden bg-[#050505]">
+        <img
+          src="/Assets/vortex_register_onboarding.png"
+          alt="Dersha Register Exchange Headquarters Visual"
+          className="absolute inset-0 h-full w-full object-cover opacity-85 transition-all duration-700 hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#000000] via-[#000000]/40 to-[#000000]/20" />
 
-      <main className="page-content flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-28 pb-24 flex flex-col items-center">
-        <div className="w-full max-w-2xl mb-12 dersha-animate-in">
-          <OnboardingStepper currentStep={1} />
+        {/* Top Floating Badge */}
+        <div className="relative z-10 flex justify-start">
+          <div className="vortex-badge vortex-badge-cyber text-xs px-3 py-1">
+            ECMA REGULATED FRAMEWORK
+          </div>
         </div>
 
-        <section className="dersha-card-elevated w-full max-w-xl p-8 md:p-12 shadow-2xl relative overflow-hidden dersha-animate-in" style={{ animationDelay: '100ms' }}>
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/8 rounded-full blur-[80px]" />
+        {/* Bottom Floating Telemetry Panel */}
+        <div className="relative z-10 vortex-panel bg-[#000000]/85 backdrop-blur-md p-6 border-2 border-[#D4FF00] font-mono text-xs">
+          <div className="flex items-center gap-3 mb-3 text-[#D4FF00]">
+            <span className="h-2 w-2 rounded-full bg-[#D4FF00] animate-pulse" />
+            <span className="font-bold uppercase tracking-wider">150M+ ETB DEPLOYED CAPITAL</span>
+          </div>
+          <h3 className="font-sans text-xl font-black uppercase text-[#ffffff] mb-2">
+            JOIN ETHIOPIA'S FRACTIONAL MARKETPLACE
+          </h3>
+          <p className="font-sans text-xs text-[#a0a0a0] leading-relaxed">
+            Direct access to appraised real estate, logistics fleets, and agricultural sub-funds with custodian bank trustee security and monthly cash flow distributions.
+          </p>
+        </div>
+      </div>
 
-          <div className="text-center mb-10 relative">
-            <h1 className="dersha-heading font-display-lg text-display-lg-mobile mb-3">
-              Create Your Wealth Account
-            </h1>
-            <p className="dersha-subheading font-body-md text-body-md text-on-surface-variant">
-              Set up your secure credentials to begin investing in alternative fractional assets in Ethiopia.
-            </p>
+      {/* RIGHT COLUMN: REGISTER FORM & STEPPER */}
+      <div className="flex flex-col justify-between p-6 sm:p-10 md:p-12 lg:p-14 vortex-grid-bg overflow-y-auto">
+        <div>
+          {/* Header Branding */}
+          <div className="flex items-center justify-between mb-6 sm:mb-8">
+            <Link to="/" className="inline-flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-[2px] bg-[#D4FF00] font-mono text-lg font-black text-[#000000]">
+                D
+              </div>
+              <span className="font-mono text-lg font-black tracking-widest text-[#D4FF00]">DERSHA</span>
+            </Link>
+            <Link to="/login" className="font-mono text-xs font-bold text-[#D4FF00] hover:underline">
+              LOG IN →
+            </Link>
           </div>
 
-          <form className="space-y-6" onSubmit={handleSubmit} noValidate>
-            {error && <FormAlert tone="error" message={error} />}
+          <div className="w-full max-w-lg">
+            <div className="mb-6">
+              <OnboardingStepper currentStep={1} />
+            </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="dersha-label ml-1" htmlFor="full-name">Full Name</label>
-              <div className="emerald-glow rounded-xl bg-surface-container-low transition-all duration-200">
+            <header className="mb-6 border-b border-[#D4FF00]/30 pb-4">
+              <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#D4FF00]">
+                STEP 01. ONBOARDING CREDENTIALS
+              </span>
+              <h1 className="font-sans text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-[#ffffff] mt-1">
+                CREATE INVESTOR ACCOUNT
+              </h1>
+              <p className="font-sans text-xs text-[#a0a0a0] mt-1">
+                Register to access fractional asset telemetry and sub-fund marketplace opportunities.
+              </p>
+            </header>
+
+            <form className="space-y-4" onSubmit={handleSubmit} noValidate>
+              {error && <FormAlert tone="error" message={error} />}
+
+              <div className="space-y-1.5">
+                <label className="font-mono text-xs font-bold uppercase tracking-wider text-[#D4FF00]" htmlFor="full-name">
+                  FULL NAME (LEGAL IDENTIFIER)
+                </label>
                 <input
                   autoComplete="name"
-                  className="dersha-input border-0 bg-transparent"
+                  className="vortex-input"
                   id="full-name"
                   name="fullName"
                   placeholder="Abebe Bikila"
@@ -112,127 +147,117 @@ export default function AccountInfo() {
                   value={form.fullName}
                   onChange={update('fullName')}
                 />
+                <FieldError message={fieldErrors.fullName} />
               </div>
-              <FieldError message={fieldErrors.fullName} />
-            </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="dersha-label ml-1" htmlFor="email">Email Address</label>
-              <div className="emerald-glow rounded-xl bg-surface-container-low transition-all duration-200">
+              <div className="space-y-1.5">
+                <label className="font-mono text-xs font-bold uppercase tracking-wider text-[#D4FF00]" htmlFor="email">
+                  EMAIL ADDRESS
+                </label>
                 <input
                   autoComplete="email"
-                  className="dersha-input border-0 bg-transparent"
+                  className="vortex-input"
                   id="email"
                   name="email"
-                  placeholder="name@domain.com…"
+                  placeholder="name@domain.com"
                   spellCheck={false}
                   type="email"
                   value={form.email}
                   onChange={update('email')}
                 />
+                <FieldError message={fieldErrors.email} />
               </div>
-              <FieldError message={fieldErrors.email} />
-            </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="dersha-label ml-1" htmlFor="phone">Phone Number</label>
-              <div className="flex gap-2">
-                <div className="relative min-w-[100px] emerald-glow rounded-xl bg-surface-container-low">
+              <div className="space-y-1.5">
+                <label className="font-mono text-xs font-bold uppercase tracking-wider text-[#D4FF00]" htmlFor="phone">
+                  ETHIOPIAN PHONE NUMBER
+                </label>
+                <div className="flex gap-2">
                   <select
                     aria-label="Country code"
-                    className="w-full bg-transparent border-0 rounded-xl py-4 pl-4 pr-8 text-on-surface focus:ring-0 appearance-none"
+                    className="vortex-input w-28 text-center font-mono font-bold"
                     name="countryCode"
                     value={form.countryCode}
                     onChange={update('countryCode')}
                   >
                     {COUNTRY_CODES.map((code) => (
-                      <option key={code} value={code}>{code}</option>
+                      <option key={code} value={code} className="bg-[#000000] text-[#ffffff]">{code}</option>
                     ))}
                   </select>
-                  <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" aria-hidden="true">
-                    expand_more
-                  </span>
-                </div>
-                <div className="relative flex-grow emerald-glow rounded-xl bg-surface-container-low">
                   <input
                     autoComplete="tel"
-                    className="dersha-input border-0 bg-transparent"
+                    className="vortex-input flex-1"
                     id="phone"
                     inputMode="tel"
                     maxLength={11}
                     name="phone"
-                    placeholder="911 234 567"
+                    placeholder="911234567"
                     type="tel"
                     value={form.phone}
                     onChange={update('phone')}
                   />
                 </div>
+                <FieldError message={fieldErrors.phone} />
               </div>
-              <p className="text-[11px] text-outline ml-1">
-                Ethiopian mobile number without the leading zero, for example 911234567.
-              </p>
-              <FieldError message={fieldErrors.phone} />
-            </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="dersha-label ml-1" htmlFor="password">Password</label>
-              <div className="relative emerald-glow rounded-xl bg-surface-container-low group">
+              <div className="space-y-1.5">
+                <label className="font-mono text-xs font-bold uppercase tracking-wider text-[#D4FF00]" htmlFor="password">
+                  SECURITY PASSWORD
+                </label>
+                <div className="relative">
+                  <input
+                    autoComplete="new-password"
+                    className="vortex-input pr-12"
+                    id="password"
+                    name="password"
+                    placeholder="••••••••"
+                    type={showPassword ? 'text' : 'password'}
+                    value={form.password}
+                    onChange={update('password')}
+                  />
+                  <button
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a0a0a0] hover:text-[#D4FF00]"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    type="button"
+                  >
+                    <span className="material-symbols-outlined text-lg" aria-hidden="true">
+                      {showPassword ? 'visibility_off' : 'visibility'}
+                    </span>
+                  </button>
+                </div>
+                <FieldError message={fieldErrors.password} />
+              </div>
+
+              <label className="flex items-center gap-3 cursor-pointer font-mono text-xs text-[#a0a0a0] hover:text-[#ffffff] pt-1">
                 <input
-                  autoComplete="new-password"
-                  className="dersha-input border-0 bg-transparent pr-14"
-                  id="password"
-                  name="password"
-                  placeholder="••••••••"
-                  type={showPassword ? 'text' : 'password'}
-                  value={form.password}
-                  onChange={update('password')}
+                  checked={form.isDiaspora}
+                  className="h-4 w-4 rounded-[2px] border border-[#D4FF00] bg-[#000000] accent-[#D4FF00]"
+                  name="isDiaspora"
+                  onChange={update('isDiaspora')}
+                  type="checkbox"
                 />
-                <button
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  className="absolute right-5 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  type="button"
-                >
-                  <span className="material-symbols-outlined" aria-hidden="true">
-                    {showPassword ? 'visibility_off' : 'visibility'}
-                  </span>
-                </button>
-              </div>
-              <p className="text-[11px] text-outline ml-1">Minimum 8 characters.</p>
-              <FieldError message={fieldErrors.password} />
-            </div>
+                <span>REGISTER AS DIASPORA INVESTOR (INTERNATIONAL)</span>
+              </label>
 
-            <label className="flex items-start gap-3 cursor-pointer group">
-              <input
-                checked={form.isDiaspora}
-                className="mt-1 h-4 w-4 accent-primary"
-                name="isDiaspora"
-                onChange={update('isDiaspora')}
-                type="checkbox"
-              />
-              <span className="text-sm text-on-surface-variant group-hover:text-on-surface transition-colors">
-                I am investing from abroad (diaspora account)
-              </span>
-            </label>
-
-            <button
-              className="dersha-btn dersha-btn-primary w-full py-5 text-headline-md mt-4"
-              disabled={submitting}
-              type="submit"
-            >
-              {submitting ? 'Creating your account…' : 'Next: Verify Identity'}
-            </button>
-          </form>
-
-          <div className="mt-8 pt-8 border-t border-outline-variant/20 text-center">
-            <Link className="text-on-surface-variant hover:text-primary transition-colors" to="/login">
-              Already have an account? <span className="dersha-link">Log In</span>
-            </Link>
+              <button
+                className="vortex-btn-primary w-full py-4 mt-3"
+                disabled={submitting}
+                type="submit"
+              >
+                {submitting ? 'PROCESSING REGISTRATION...' : 'PROCEED TO IDENTITY VERIFICATION →'}
+              </button>
+            </form>
           </div>
-        </section>
-      </main>
+        </div>
 
-      <div className="page-atmosphere -z-50" />
+        <footer className="mt-8 border-t border-white/10 pt-4 font-mono text-xs text-[#8c8c8c]">
+          ALREADY REGISTERED?{' '}
+          <Link className="font-bold text-[#D4FF00] hover:underline ml-1" to="/login">
+            LOG IN TO TERMINAL →
+          </Link>
+        </footer>
+      </div>
     </div>
   )
 }

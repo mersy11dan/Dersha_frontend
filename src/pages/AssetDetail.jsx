@@ -17,7 +17,6 @@ import { realtimeTopics, useRealtime, useRealtimeStatus } from '../lib/realtime'
 import {
   categoryIcon,
   categoryLabel,
-  changeTone,
   formatChange,
   formatDate,
   formatEtb,
@@ -64,7 +63,7 @@ export default function AssetDetail() {
     return (
       <DashboardLayout activeNav="marketplace" sidebarVariant="exchange">
         <div className="px-6 py-8 md:px-10">
-          <LoadingPanel label="Loading asset" rows={5} />
+          <LoadingPanel label="Loading asset telemetry..." rows={5} />
         </div>
       </DashboardLayout>
     )
@@ -82,58 +81,58 @@ export default function AssetDetail() {
 
   return (
     <DashboardLayout activeNav="marketplace" sidebarVariant="exchange">
-      <div className="flex flex-1 flex-col gap-8 px-6 py-8 md:px-10">
-        <nav className="flex items-center gap-2 text-sm text-on-surface-variant">
-          <Link className="hover:text-primary" to="/marketplace">
-            Marketplace
+      <div className="flex flex-1 flex-col gap-8 px-6 py-8 md:px-10 font-sans text-[#ffffff]">
+        <nav className="flex items-center gap-2 font-mono text-xs text-[#8c8c8c]">
+          <Link className="hover:text-[#D4FF00] transition-colors" to="/marketplace">
+            MARKETPLACE
           </Link>
-          <span aria-hidden="true">/</span>
-          <span className="text-on-surface">{data.asset_name}</span>
+          <span aria-hidden="true">•</span>
+          <span className="text-[#ffffff] font-bold">{data.asset_name}</span>
         </nav>
 
-        <header className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <header className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between border-b border-[#D4FF00]/30 pb-6">
           <div className="min-w-0">
-            <div className="mb-2 flex flex-wrap items-center gap-3">
-              <span className="rounded-full bg-primary-container px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-on-primary-container">
+            <div className="mb-3 flex flex-wrap items-center gap-3 font-mono">
+              <span className="vortex-badge vortex-badge-volt">
                 {categoryLabel(data.category)}
               </span>
-              <span className="rounded-full bg-surface-container-high px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-on-surface-variant">
+              <span className="vortex-badge vortex-badge-outline">
                 {titleCase(data.sub_fund_status)}
               </span>
               <LiveBadge status={realtimeStatus} />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight text-on-surface lg:text-4xl">
+            <h1 className="font-sans text-3xl font-extrabold uppercase tracking-tight text-[#ffffff] lg:text-4xl">
               {data.asset_name}
             </h1>
-            <p className="mt-2 flex items-center gap-1.5 text-on-surface-variant">
-              <span aria-hidden="true" className="material-symbols-outlined text-[18px]">
+            <p className="mt-2 flex items-center gap-1.5 font-mono text-xs text-[#8c8c8c]">
+              <span aria-hidden="true" className="material-symbols-outlined text-base text-[#D4FF00]">
                 {categoryIcon(data.category)}
               </span>
               {data.location}
             </p>
           </div>
 
-          <div className="shrink-0 text-left lg:text-right">
-            <p className="text-xs text-outline">Mark price</p>
-            <p className="text-4xl font-bold text-on-surface">
+          <div className="shrink-0 text-left lg:text-right font-mono">
+            <p className="text-xs text-[#8c8c8c] uppercase">MARK PRICE</p>
+            <p className="text-4xl font-black text-[#D4FF00]">
               {formatEtb(data.price_per_share_etb, { decimals: 2 })}
             </p>
-            <p className={`mt-1 text-sm font-bold ${changeTone(data.price_change_24h_percentage)}`}>
+            <p className={`mt-1 text-xs font-bold ${data.price_change_24h_percentage >= 0 ? 'text-[#00FF9D]' : 'text-red-400'}`}>
               {data.price_change_24h_percentage === null
-                ? 'No prior trade to compare'
-                : `${formatChange(data.price_change_24h_percentage)} over 24h`}
+                ? 'NO PRIOR TRADE TO COMPARE'
+                : `${formatChange(data.price_change_24h_percentage)} OVER 24H`}
             </p>
           </div>
         </header>
 
-        <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <Stat label="Appraised value" value={formatEtb(data.appraised_value_etb)} />
+        <section className="grid grid-cols-2 gap-4 lg:grid-cols-4 font-mono">
+          <Stat label="APPRAISED VALUE" value={formatEtb(data.appraised_value_etb)} />
           <Stat
-            label="Market capitalisation"
+            label="MARKET CAPITALISATION"
             value={formatEtb(data.market_capitalisation_etb)}
           />
-          <Stat label="24h volume" value={formatEtb(data.volume_24h_etb)} />
-          <Stat label="Issued shares" value={formatShares(data.total_issued_shares)} />
+          <Stat label="24H VOLUME" value={formatEtb(data.volume_24h_etb)} />
+          <Stat label="ISSUED SHARES" value={formatShares(data.total_issued_shares)} />
         </section>
 
         <div className="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
@@ -148,39 +147,41 @@ export default function AssetDetail() {
               onPickPrice={(price, direction) => setTicketHint({ price, direction })}
             />
 
-            <section className="wallet-panel p-6">
-              <h2 className="mb-5 text-lg font-semibold text-on-surface">Recent trades</h2>
+            <section className="vortex-panel p-6 bg-[#050505]">
+              <h2 className="mb-4 font-mono text-xs font-bold uppercase tracking-widest text-[#D4FF00]">
+                // RECENT TRADE EXECUTIONS
+              </h2>
               {(data.recent_trades ?? []).length === 0 ? (
-                <p className="text-sm text-on-surface-variant">
-                  No trades yet. The first fill will set the market price.
+                <p className="font-mono text-xs text-[#8c8c8c]">
+                  No trades executed yet. First fill sets mark price.
                 </p>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                <div className="overflow-x-auto font-mono text-xs">
+                  <table className="w-full text-left">
                     <thead>
-                      <tr className="text-left text-[11px] uppercase tracking-wide text-outline">
-                        <th className="pb-2 font-bold">Time</th>
-                        <th className="pb-2 font-bold">Price</th>
-                        <th className="pb-2 text-right font-bold">Shares</th>
-                        <th className="pb-2 text-right font-bold">Type</th>
+                      <tr className="border-b border-white/10 text-[10px] uppercase text-[#8c8c8c]">
+                        <th className="pb-3">TIME</th>
+                        <th className="pb-3">PRICE</th>
+                        <th className="pb-3 text-right">SHARES</th>
+                        <th className="pb-3 text-right">TYPE</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-outline-variant/20">
+                    <tbody className="divide-y divide-white/5">
                       {data.recent_trades.slice(0, 12).map((trade, index) => (
-                        <tr key={`${trade.executed_at}-${index}`}>
-                          <td className="py-2 text-on-surface-variant">
+                        <tr key={`${trade.executed_at}-${index}`} className="hover:bg-white/5">
+                          <td className="py-3 text-[#8c8c8c]">
                             {formatRelative(trade.executed_at)}
                           </td>
-                          <td className="py-2 font-semibold text-on-surface">
+                          <td className="py-3 font-bold text-[#D4FF00]">
                             {formatEtb(trade.price_per_share_etb, { decimals: 2 })}
                           </td>
-                          <td className="py-2 text-right text-on-surface-variant">
+                          <td className="py-3 text-right text-[#ffffff]">
                             {formatShares(trade.shares)}
                           </td>
-                          <td className="py-2 text-right text-xs text-outline">
+                          <td className="py-3 text-right text-[10px] text-[#8c8c8c]">
                             {trade.execution_type === 'AMM_BUYBACK'
-                              ? 'Liquidity buffer'
-                              : 'Order book'}
+                              ? 'AMM BUFFER'
+                              : 'ORDER BOOK'}
                           </td>
                         </tr>
                       ))}
@@ -190,35 +191,36 @@ export default function AssetDetail() {
               )}
             </section>
 
-            <section className="wallet-panel p-6">
-              <h2 className="mb-5 text-lg font-semibold text-on-surface">Income history</h2>
+            <section className="vortex-panel p-6 bg-[#050505]">
+              <h2 className="mb-4 font-mono text-xs font-bold uppercase tracking-widest text-[#00FF9D]">
+                // DIVIDEND & INCOME HISTORY
+              </h2>
               {(distributions.data ?? []).length === 0 ? (
-                <p className="text-sm text-on-surface-variant">
-                  No distributions yet. Rent and revenue are paid out to shareholders as they
-                  are collected.
+                <p className="font-mono text-xs text-[#8c8c8c]">
+                  No distributions yet. Monthly rent and lease cashflows disburse directly to token holders.
                 </p>
               ) : (
-                <ul className="flex flex-col gap-3">
+                <ul className="flex flex-col gap-3 font-mono text-xs">
                   {distributions.data.map((distribution) => (
                     <li
                       key={distribution.distribution_id}
-                      className="flex items-center justify-between gap-4 border-b border-outline-variant/20 pb-3 last:border-0 last:pb-0"
+                      className="flex items-center justify-between gap-4 border-b border-white/10 pb-3 last:border-0 last:pb-0"
                     >
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-on-surface">
+                        <p className="truncate font-bold text-[#ffffff]">
                           {titleCase(distribution.yield_category)}
                         </p>
-                        <p className="text-xs text-on-surface-variant">
-                          {formatDate(distribution.reporting_period_start)} to{' '}
+                        <p className="text-[10px] text-[#8c8c8c]">
+                          {formatDate(distribution.reporting_period_start)} TO{' '}
                           {formatDate(distribution.reporting_period_end)}
                         </p>
                       </div>
                       <div className="shrink-0 text-right">
-                        <p className="text-sm font-bold text-primary">
+                        <p className="font-bold text-[#00FF9D]">
                           {formatEtb(distribution.net_amount_disbursed_etb)}
                         </p>
-                        <p className="text-xs text-outline">
-                          {formatEtb(distribution.total_tax_withheld_etb)} tax withheld
+                        <p className="text-[10px] text-[#8c8c8c]">
+                          {formatEtb(distribution.total_tax_withheld_etb)} TAX WITHHELD
                         </p>
                       </div>
                     </li>
@@ -238,97 +240,45 @@ export default function AssetDetail() {
               suggestedPrice={ticketHint.price}
             />
 
-            <section className="wallet-panel p-6">
-              <h2 className="mb-4 text-lg font-semibold text-on-surface">Your position</h2>
+            <section className="vortex-panel p-6 bg-[#050505]">
+              <h2 className="mb-4 font-mono text-xs font-bold uppercase tracking-widest text-[#D4FF00]">
+                // YOUR POSITION
+              </h2>
               {holding ? (
-                <dl className="flex flex-col gap-3 text-sm">
-                  <Row label="Shares owned" value={formatShares(holding.shares_owned)} />
-                  <Row label="Tradable" value={formatShares(holding.tradable_shares)} />
+                <dl className="flex flex-col gap-3 font-mono text-xs">
+                  <Row label="SHARES OWNED" value={formatShares(holding.shares_owned)} />
+                  <Row label="TRADABLE" value={formatShares(holding.tradable_shares)} />
                   <Row
-                    label="Market value"
+                    label="MARKET VALUE"
                     value={formatEtb(holding.market_value_etb, { decimals: 2 })}
                   />
                   <Row
-                    label="Unrealised"
-                    tone={changeTone(holding.unrealised_gain_etb)}
+                    label="UNREALIZED"
+                    tone={holding.unrealised_gain_etb >= 0 ? 'text-[#00FF9D]' : 'text-red-400'}
                     value={`${formatEtb(holding.unrealised_gain_etb, { decimals: 2 })} (${formatChange(
                       holding.unrealised_gain_percentage,
                     )})`}
                   />
-                  {holding.vesting_locked_shares > 0 && (
-                    <Row
-                      label="Vesting locked"
-                      value={`${formatShares(holding.vesting_locked_shares)} until ${formatDate(
-                        holding.vesting_unlock_at,
-                      )}`}
-                    />
-                  )}
                 </dl>
               ) : (
-                <p className="text-sm text-on-surface-variant">
-                  You do not hold this asset yet.
+                <p className="font-mono text-xs text-[#8c8c8c]">
+                  You do not hold units of this asset yet.
                 </p>
               )}
             </section>
 
-            <section className="wallet-panel p-6">
-              <h2 className="mb-4 text-lg font-semibold text-on-surface">Your open orders</h2>
-              {openOrders.length === 0 ? (
-                <p className="text-sm text-on-surface-variant">
-                  Nothing resting on the book for this asset.
-                </p>
-              ) : (
-                <ul className="flex flex-col gap-3">
-                  {openOrders.map((order) => (
-                    <li
-                      key={order.order_id}
-                      className="flex items-center justify-between gap-3 rounded-xl bg-surface-container-low px-3 py-2.5"
-                    >
-                      <div className="min-w-0">
-                        <p
-                          className={`text-sm font-bold ${
-                            order.direction === 'BUY' ? 'text-primary' : 'text-error'
-                          }`}
-                        >
-                          {order.direction}{' '}
-                          {formatShares(
-                            order.total_shares_ordered - order.filled_shares_accumulated,
-                          )}
-                        </p>
-                        <p className="text-xs text-on-surface-variant">
-                          at {formatEtb(order.target_price_per_share_etb, { decimals: 2 })}
-                        </p>
-                      </div>
-                      <button
-                        className="shrink-0 rounded-lg border border-outline-variant/40 px-3 py-1.5 text-xs font-semibold text-on-surface-variant transition-colors hover:border-error hover:text-error"
-                        onClick={async () => {
-                          await ordersService.cancel(order.order_id)
-                          refreshAll()
-                        }}
-                        type="button"
-                      >
-                        Cancel
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-
-            <section className="wallet-panel p-6">
-              <h2 className="mb-4 text-lg font-semibold text-on-surface">Custody</h2>
-              <dl className="flex flex-col gap-3 text-sm">
-                <Row label="Custodian" value={data.custodian_bank_name ?? 'Pending'} />
-                <Row label="Last appraisal" value={formatDate(data.last_appraisal_date)} />
+            <section className="vortex-panel p-6 bg-[#050505]">
+              <h2 className="mb-4 font-mono text-xs font-bold uppercase tracking-widest text-[#00FF9D]">
+                // CUSTODY TRUST
+              </h2>
+              <dl className="flex flex-col gap-3 font-mono text-xs">
+                <Row label="CUSTODIAN BANK" value={data.custodian_bank_name ?? 'CBE Trustee'} />
+                <Row label="LAST APPRAISAL" value={formatDate(data.last_appraisal_date)} />
                 <Row
-                  label="Nominal price"
+                  label="NOMINAL PRICE"
                   value={formatEtb(data.nominal_price_per_share_etb, { decimals: 2 })}
                 />
               </dl>
-              <p className="mt-4 text-xs text-on-surface-variant">
-                The physical asset is held in trust by the custodian bank. Shares are a claim on
-                that trust, not a direct title transfer.
-              </p>
             </section>
           </aside>
         </div>
@@ -339,18 +289,18 @@ export default function AssetDetail() {
 
 function Stat({ label, value }) {
   return (
-    <div className="wallet-panel p-4">
-      <p className="text-xs text-outline">{label}</p>
-      <p className="mt-1 text-xl font-bold text-on-surface">{value}</p>
+    <div className="vortex-panel p-4 bg-[#050505]">
+      <p className="font-mono text-[10px] text-[#8c8c8c] uppercase">{label}</p>
+      <p className="mt-1 font-mono text-lg font-black text-[#D4FF00]">{value}</p>
     </div>
   )
 }
 
-function Row({ label, value, tone = 'text-on-surface' }) {
+function Row({ label, value, tone = 'text-[#ffffff]' }) {
   return (
-    <div className="flex items-center justify-between gap-3">
-      <dt className="text-on-surface-variant">{label}</dt>
-      <dd className={`text-right font-semibold ${tone}`}>{value}</dd>
+    <div className="flex items-center justify-between gap-3 font-mono text-xs">
+      <dt className="text-[#8c8c8c]">{label}</dt>
+      <dd className={`text-right font-bold ${tone}`}>{value}</dd>
     </div>
   )
 }

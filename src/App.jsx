@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 import Login from "./pages/Login";
@@ -13,111 +14,126 @@ import BasketDetail from "./pages/BasketDetail";
 import WalletDeposit from "./pages/WalletDeposit";
 import WalletWithdrawal from "./pages/WalletWithdrawal";
 import Assets from "./pages/Assets";
+import Dashboard from "./pages/Dashboard";
+import StockComparison from "./pages/StockComparison";
 import LandingPage from "./pages/LandingPage";
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Public */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/account-info" element={<AccountInfo />} />
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/account-info" element={<AccountInfo />} />
 
-          {/* Onboarding: authenticated, but reachable before verification. */}
-          <Route
-            path="/identity-verification"
-            element={
-              <ProtectedRoute requireVerified={false}>
-                <IdentityVerification />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/link-funding"
-            element={
-              <ProtectedRoute>
-                <LinkFunding />
-              </ProtectedRoute>
-            }
-          />
+            {/* Onboarding */}
+            <Route
+              path="/identity-verification"
+              element={
+                <ProtectedRoute requireVerified={false}>
+                  <IdentityVerification />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/link-funding"
+              element={
+                <ProtectedRoute>
+                  <LinkFunding />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Verified investors only */}
-          <Route
-            path="/marketplace"
-            element={
-              <ProtectedRoute>
-                <Marketplace />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/marketplace/assets/:subFundId"
-            element={
-              <ProtectedRoute>
-                <AssetDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/custom-baskets"
-            element={
-              <ProtectedRoute>
-                <CustomBaskets />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/custom-baskets/:basketId"
-            element={
-              <ProtectedRoute>
-                <BasketDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/wallet/deposit"
-            element={
-              <ProtectedRoute>
-                <WalletDeposit />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/wallet/withdrawal"
-            element={
-              <ProtectedRoute>
-                <WalletWithdrawal />
-              </ProtectedRoute>
-            }
-          />
-          {/* Confirmation is a modal on the funding screen now, not its own page. */}
-          <Route
-            path="/wallet/confirm-deposit"
-            element={<Navigate to="/wallet/deposit" replace />}
-          />
-          <Route
-            path="/wallet/confirm-withdrawal"
-            element={<Navigate to="/wallet/withdrawal" replace />}
-          />
-          <Route
-            path="/portfolio/assets"
-            element={
-              <ProtectedRoute>
-                <Assets />
-              </ProtectedRoute>
-            }
-          />
+            {/* Verified investors only */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/marketplace"
+              element={
+                <ProtectedRoute>
+                  <Marketplace />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/marketplace/assets/:subFundId"
+              element={
+                <ProtectedRoute>
+                  <AssetDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/custom-baskets"
+              element={
+                <ProtectedRoute>
+                  <CustomBaskets />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/custom-baskets/:basketId"
+              element={
+                <ProtectedRoute>
+                  <BasketDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/stock-comparison"
+              element={
+                <ProtectedRoute>
+                  <StockComparison />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/wallet/deposit"
+              element={
+                <ProtectedRoute>
+                  <WalletDeposit />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/wallet/withdrawal"
+              element={
+                <ProtectedRoute>
+                  <WalletWithdrawal />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/wallet/confirm-deposit"
+              element={<Navigate to="/wallet/deposit" replace />}
+            />
+            <Route
+              path="/wallet/confirm-withdrawal"
+              element={<Navigate to="/wallet/withdrawal" replace />}
+            />
+            <Route
+              path="/portfolio/assets"
+              element={
+                <ProtectedRoute>
+                  <Assets />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/dashboard"
-            element={<Navigate to="/marketplace" replace />}
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

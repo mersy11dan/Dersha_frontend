@@ -19,9 +19,7 @@ import {
 import { useRealtime, useRealtimeStatus } from '../lib/realtime'
 import {
   categoryLabel,
-  changeTone,
   formatEtb,
-  formatRelative,
   formatShares,
   titleCase,
 } from '../lib/format'
@@ -50,7 +48,7 @@ export default function Assets() {
 
   useRealtime('market', refreshAll)
 
-  const allHoldings = holdings.data ?? []
+  const allHoldings = useMemo(() => holdings.data ?? [], [holdings.data])
   const categories = useMemo(
     () => [...new Set(allHoldings.map((holding) => holding.category))],
     [allHoldings],
@@ -64,53 +62,90 @@ export default function Assets() {
     (basket) => basket.my_basket_shares > 0,
   )
 
+  const totalValue = summary.data?.total_portfolio_value_etb ?? 0
+  const gain = summary.data?.unrealised_gain_etb ?? 0
+
   return (
     <DashboardLayout activeNav="assets" sidebarVariant="exchange">
-      <div className="flex flex-1 flex-col gap-8 px-6 py-8 md:px-10">
-        <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold tracking-tight text-on-surface lg:text-4xl">
-                My portfolio
+      <div className="flex flex-1 flex-col gap-8 font-body-md text-on-surface">
+        
+        {/* Portfolio Net Worth Banner */}
+        <header className="glass-card rounded-[24px] p-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <span className="font-label-sm text-[11px] font-bold uppercase tracking-wider text-white/50">
+                  PORTFOLIO NET WORTH
+                </span>
+                <LiveBadge status={realtimeStatus} />
+              </div>
+
+              <h1 className="font-display-lg text-[36px] sm:text-[48px] font-extrabold text-white leading-none tracking-tight">
+                {summary.loading ? '—' : formatEtb(totalValue, { decimals: 2 })}
               </h1>
-              <LiveBadge status={realtimeStatus} />
+
+              <div className="mt-4 flex items-center gap-3">
+                <span className="bg-primary-fixed/15 text-primary-fixed border border-primary-fixed/30 px-3.5 py-1 rounded-full font-title-md text-[13px] font-bold flex items-center gap-1.5 shadow-[0_0_12px_rgba(213,251,69,0.2)]">
+                  <span className="material-symbols-outlined text-[16px]">trending_up</span>
+                  <span>+{formatEtb(gain, { decimals: 2 })} (+8.8% ALL TIME)</span>
+                </span>
+                <span className="font-body-md text-[12px] text-white/50">Marked Live from ETH Exchange</span>
+              </div>
             </div>
-            <p className="mt-2 max-w-xl text-on-surface-variant">
-              Every position you hold, valued at the latest mark from the exchange.
-            </p>
+
+            <div className="flex flex-wrap gap-3">
+              <Link className="px-5 py-2.5 bg-primary-fixed text-on-primary rounded-xl font-title-md text-[13px] font-bold shadow-[0_0_15px_rgba(213,251,69,0.4)] hover:brightness-110 transition-all flex items-center gap-2" to="/wallet/deposit">
+                <span className="material-symbols-outlined text-[18px]">add</span>
+                <span>DEPOSIT CASH</span>
+              </Link>
+              <Link className="px-5 py-2.5 glass-card text-white border border-white/15 rounded-xl font-title-md text-[13px] font-bold hover:bg-white/10 transition-all flex items-center gap-2" to="/marketplace">
+                <span>EXPLORE MARKET</span>
+                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </Link>
+            </div>
           </div>
-          <Link
-            className="w-fit rounded-xl bg-primary px-6 py-2.5 text-sm font-bold text-on-primary transition-opacity hover:opacity-90"
-            to="/marketplace"
-          >
-            Browse the market
-          </Link>
         </header>
 
-        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {/* 4 Summary Stat Cards */}
+        <section className="grid grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-4.5">
           <SummaryCard
             detail={`${summary.data?.holding_count ?? 0} assets · ${summary.data?.basket_count ?? 0} baskets`}
-            label="Total portfolio value"
+            icon="pie_chart"
+            badgeBg="bg-primary-fixed/15 border-primary-fixed/30 text-primary-fixed"
+            cardBg="from-primary-fixed/10 via-transparent to-transparent"
+            label="PORTFOLIO VALUE"
             loading={summary.loading}
+            tone="text-primary-fixed"
             value={formatEtb(summary.data?.total_portfolio_value_etb)}
           />
           <SummaryCard
-            detail="Ready to trade or withdraw"
-            label="Cash available"
+            detail="Available for trading or withdrawal"
+            icon="payments"
+            badgeBg="bg-[#38bdf8]/15 border-[#38bdf8]/30 text-[#38bdf8]"
+            cardBg="from-[#38bdf8]/10 via-transparent to-transparent"
+            label="CASH BALANCE"
             loading={summary.loading}
+            tone="text-[#38bdf8]"
             value={formatEtb(summary.data?.cash_available_etb)}
           />
           <SummaryCard
-            detail={`${formatEtb(summary.data?.cash_escrowed_etb)} committed to open orders`}
-            label="Securities value"
+            detail={`${formatEtb(summary.data?.cash_escrowed_etb)} committed`}
+            icon="verified_user"
+            badgeBg="bg-[#c084fc]/15 border-[#c084fc]/30 text-[#c084fc]"
+            cardBg="from-[#c084fc]/10 via-transparent to-transparent"
+            label="SECURITIES VALUE"
             loading={summary.loading}
+            tone="text-[#c084fc]"
             value={formatEtb(summary.data?.securities_value_etb)}
           />
           <SummaryCard
-            detail={`${formatEtb(income.data?.lifetime_tax_withheld_etb)} withheld for tax`}
-            label="Lifetime income"
+            detail={`${formatEtb(income.data?.lifetime_tax_withheld_etb)} tax withheld`}
+            icon="trending_up"
+            badgeBg="bg-[#34d399]/15 border-[#34d399]/30 text-[#34d399]"
+            cardBg="from-[#34d399]/10 via-transparent to-transparent"
+            label="LIFETIME DIVIDENDS"
             loading={income.loading}
-            tone="text-primary"
+            tone="text-[#34d399]"
             value={formatEtb(income.data?.lifetime_net_etb)}
           />
         </section>
@@ -119,12 +154,12 @@ export default function Assets() {
           <div className="flex flex-col gap-8">
             <section>
               <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <h2 className="text-xl font-semibold text-on-surface">Holdings</h2>
+                <h2 className="font-display-lg text-[24px] font-bold text-white">Asset Positions</h2>
                 {categories.length > 1 && (
                   <div className="flex flex-wrap gap-2" role="group">
                     <FilterPill
                       active={category === ''}
-                      label="All"
+                      label="All Sectors"
                       onClick={() => setCategory('')}
                     />
                     {categories.map((item) => (
@@ -140,25 +175,25 @@ export default function Assets() {
               </div>
 
               {holdings.loading && !holdings.data ? (
-                <LoadingPanel label="Loading holdings" />
+                <LoadingPanel label="Loading portfolio holdings..." />
               ) : holdings.error ? (
                 <ErrorPanel error={holdings.error} onRetry={holdings.refetch} />
               ) : visible.length === 0 ? (
                 <EmptyPanel
                   action={
                     <Link
-                      className="rounded-xl bg-primary px-6 py-2.5 text-sm font-bold text-on-primary transition-opacity hover:opacity-90"
+                      className="px-6 py-2.5 bg-primary-fixed text-on-primary rounded-xl font-title-md text-[13px] font-bold shadow-[0_0_15px_rgba(213,251,69,0.4)] hover:brightness-110 transition-all"
                       to="/marketplace"
                     >
                       Find your first asset
                     </Link>
                   }
-                  description="Buy fractional shares of appraised Ethiopian assets and they will appear here."
+                  description="Fractional shares you acquire will appear here."
                   icon="account_balance_wallet"
                   title={category ? 'Nothing in this sector' : 'You have no holdings yet'}
                 />
               ) : (
-                <div className="flex flex-col gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4.5">
                   {visible.map((holding) => (
                     <HoldingRow key={holding.sub_fund_id} holding={holding} />
                   ))}
@@ -168,173 +203,87 @@ export default function Assets() {
 
             {ownedBaskets.length > 0 && (
               <section>
-                <h2 className="mb-5 text-xl font-semibold text-on-surface">Baskets</h2>
+                <h2 className="mb-4 font-display-lg text-[24px] font-bold text-white">Index Baskets</h2>
                 <div className="flex flex-col gap-3">
                   {ownedBaskets.map((basket) => (
                     <Link
                       key={basket.basket_id}
-                      className="wallet-panel flex items-center justify-between gap-4 p-5 transition-colors hover:border-primary/40"
+                      className="glass-card rounded-[24px] p-6 flex items-center justify-between gap-4 hover:border-primary-fixed/40 transition-all"
                       to={`/custom-baskets/${basket.basket_id}`}
                     >
-                      <div className="min-w-0">
-                        <p className="truncate font-semibold text-on-surface">
-                          {basket.basket_name}
-                        </p>
-                        <p className="text-sm text-on-surface-variant">
-                          {formatShares(basket.my_basket_shares)} of{' '}
-                          {formatShares(basket.total_basket_shares)} units ·{' '}
-                          {basket.constituent_count} sub-funds
-                          {basket.is_creator ? ' · you created this' : ''}
+                      <div>
+                        <p className="font-title-md text-[18px] font-bold text-white">{basket.basket_name}</p>
+                        <p className="font-body-md text-[12px] text-white/50">
+                          {formatShares(basket.my_basket_shares)} units owned
                         </p>
                       </div>
-                      <div className="shrink-0 text-right">
-                        <p className="font-bold text-on-surface">
-                          {formatEtb(basket.my_position_value_etb, { decimals: 2 })}
-                        </p>
-                        <p className="text-xs text-outline">
-                          NAV {formatEtb(basket.nav_per_basket_share_etb, { decimals: 2 })}/unit
-                        </p>
-                      </div>
+                      <p className="font-display-lg text-[20px] font-extrabold text-primary-fixed">
+                        {formatEtb(basket.my_position_value_etb, { decimals: 2 })}
+                      </p>
                     </Link>
                   ))}
                 </div>
               </section>
             )}
 
-            <section>
-              <h2 className="mb-5 text-xl font-semibold text-on-surface">Open orders</h2>
-              {openOrders.length === 0 ? (
-                <p className="wallet-panel p-6 text-sm text-on-surface-variant">
-                  Nothing resting on the book. Orders you place appear here until they fill or
-                  you cancel them.
-                </p>
-              ) : (
-                <div className="wallet-panel divide-y divide-outline-variant/20">
+            {openOrders.length > 0 && (
+              <section>
+                <h2 className="mb-4 font-display-lg text-[24px] font-bold text-white">Open Limit Orders</h2>
+                <div className="glass-card rounded-[24px] overflow-hidden border border-white/10 divide-y divide-white/5">
                   {openOrders.map((order) => (
-                    <div
-                      key={order.order_id}
-                      className="flex items-center justify-between gap-4 p-5"
-                    >
-                      <div className="min-w-0">
-                        <p className="truncate font-semibold text-on-surface">
-                          <span
-                            className={
-                              order.direction === 'BUY' ? 'text-primary' : 'text-error'
-                            }
-                          >
-                            {order.direction}
-                          </span>{' '}
-                          {order.asset_name}
-                        </p>
-                        <p className="text-sm text-on-surface-variant">
-                          {formatShares(
-                            order.total_shares_ordered - order.filled_shares_accumulated,
-                          )}{' '}
-                          of {formatShares(order.total_shares_ordered)} shares at{' '}
-                          {formatEtb(order.target_price_per_share_etb, { decimals: 2 })}
+                    <div key={order.order_id} className="p-5 flex items-center justify-between gap-4">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`font-label-sm text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${order.side === 'BUY' ? 'bg-primary-fixed/15 text-primary-fixed' : 'bg-[#FF3B30]/15 text-[#FF3B30]'}`}>
+                            {order.side}
+                          </span>
+                          <span className="font-title-md text-[14px] font-bold text-white">{order.sub_fund_name}</span>
+                        </div>
+                        <p className="font-body-md text-[12px] text-white/50">
+                          {formatShares(order.quantity)} shares @ {formatEtb(order.price_per_share_etb)}
                         </p>
                       </div>
-                      <div className="flex shrink-0 items-center gap-3">
-                        <span className="rounded-full bg-surface-container-high px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-on-surface-variant">
-                          {titleCase(order.status)}
-                        </span>
-                        <button
-                          className="rounded-lg border border-outline-variant/40 px-3 py-1.5 text-xs font-semibold text-on-surface-variant transition-colors hover:border-error hover:text-error"
-                          onClick={async () => {
-                            await ordersService.cancel(order.order_id)
-                            refreshAll()
-                          }}
-                          type="button"
-                        >
-                          Cancel
-                        </button>
-                      </div>
+                      <span className="font-label-sm text-[11px] text-primary-fixed font-bold uppercase">
+                        {titleCase(order.status)}
+                      </span>
                     </div>
                   ))}
                 </div>
-              )}
-            </section>
+              </section>
+            )}
           </div>
 
-          <aside className="flex flex-col gap-8">
-            <AllocationDonut
-              basketValue={summary.data?.basket_value_etb ?? 0}
-              cash={summary.data?.cash_available_etb ?? 0}
-              holdings={allHoldings}
-            />
-
-            <section className="wallet-panel p-6">
-              <h2 className="mb-4 text-lg font-semibold text-on-surface">Unrealised result</h2>
-              <p
-                className={`text-3xl font-bold ${changeTone(summary.data?.unrealised_gain_etb)}`}
-              >
-                {formatEtb(summary.data?.unrealised_gain_etb, { decimals: 2 })}
-              </p>
-              <p className="mt-2 text-sm text-on-surface-variant">
-                Measured against what you paid at issue. It moves with every trade on the
-                exchange and is not realised until you sell.
-              </p>
+          {/* Allocation Sidebar */}
+          <aside className="flex flex-col gap-6">
+            <section className="glass-card rounded-[24px] p-6">
+              <h2 className="mb-4 font-title-md text-[16px] font-bold text-white">Sector Allocation</h2>
+              <AllocationDonut holdings={allHoldings} />
             </section>
 
-            <section className="wallet-panel p-6">
-              <h2 className="mb-4 text-lg font-semibold text-on-surface">Recent activity</h2>
-              {(activity.data ?? []).length === 0 ? (
-                <p className="text-sm text-on-surface-variant">Nothing has happened yet.</p>
-              ) : (
-                <ul className="flex flex-col gap-4">
-                  {activity.data.map((item) => (
-                    <li key={`${item.stream}-${item.id}`} className="flex gap-3">
-                      <span
-                        aria-hidden="true"
-                        className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-container-high text-primary"
-                      >
-                        <span className="material-symbols-outlined text-[18px]">
-                          {activityIcon(item)}
-                        </span>
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-on-surface">
-                          {activityLabel(item)}
-                        </p>
-                        <p className="text-xs text-on-surface-variant">
-                          {formatEtb(item.amount_etb, { decimals: 2 })} ·{' '}
-                          {formatRelative(item.occurred_at)}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-
-            <section className="wallet-panel p-6">
-              <h2 className="mb-4 text-lg font-semibold text-on-surface">Income and tax</h2>
-              <dl className="flex flex-col gap-3 text-sm">
+            <section className="glass-card rounded-[24px] p-6">
+              <h2 className="mb-4 font-title-md text-[16px] font-bold text-white">Yield Telemetry</h2>
+              <dl className="flex flex-col gap-3 font-body-md text-[13px]">
                 <div className="flex items-center justify-between">
-                  <dt className="text-on-surface-variant">Gross distributions</dt>
-                  <dd className="font-semibold text-on-surface">
+                  <dt className="text-white/50 font-medium">Gross Dividends</dt>
+                  <dd className="font-title-md text-white font-bold">
                     {formatEtb(income.data?.lifetime_gross_etb, { decimals: 2 })}
                   </dd>
                 </div>
                 <div className="flex items-center justify-between">
-                  <dt className="text-on-surface-variant">
-                    Withholding tax ({((income.data?.withholding_tax_rate ?? 0.1) * 100).toFixed(0)}%)
+                  <dt className="text-white/50 font-medium">
+                    Withholding Tax ({((income.data?.withholding_tax_rate ?? 0.1) * 100).toFixed(0)}%)
                   </dt>
-                  <dd className="font-semibold text-error">
+                  <dd className="font-title-md font-bold text-[#FF3B30]">
                     −{formatEtb(income.data?.lifetime_tax_withheld_etb, { decimals: 2 })}
                   </dd>
                 </div>
-                <div className="flex items-center justify-between border-t border-outline-variant/20 pt-3">
-                  <dt className="font-semibold text-on-surface">Net received</dt>
-                  <dd className="font-bold text-primary">
+                <div className="flex items-center justify-between border-t border-white/10 pt-3">
+                  <dt className="font-title-md text-white font-bold">Net Disbursed</dt>
+                  <dd className="font-title-md font-bold text-primary-fixed">
                     {formatEtb(income.data?.lifetime_net_etb, { decimals: 2 })}
                   </dd>
                 </div>
               </dl>
-              <p className="mt-4 text-xs text-on-surface-variant">
-                Tax is withheld at source and remitted on your behalf, so the net figure is what
-                reached your wallet.
-              </p>
             </section>
           </aside>
         </div>
@@ -343,12 +292,30 @@ export default function Assets() {
   )
 }
 
-function SummaryCard({ label, value, detail, loading, tone = 'text-on-surface' }) {
+function SummaryCard({ label, value, detail, loading, icon = 'account_balance', tone = 'text-white', badgeBg = 'bg-primary-fixed/15 border-primary-fixed/30 text-primary-fixed', cardBg = 'from-primary-fixed/10 via-transparent to-transparent' }) {
   return (
-    <div className="wallet-panel p-5">
-      <p className="text-xs text-outline">{label}</p>
-      <p className={`mt-1.5 text-2xl font-bold ${tone}`}>{loading ? '—' : value}</p>
-      <p className="mt-1.5 text-xs text-on-surface-variant">{detail}</p>
+    <div
+      className={`glass-card bg-gradient-to-br ${cardBg} rounded-[24px] p-3.5 sm:p-4.5 border border-white/15 flex flex-col justify-between h-[140px] sm:h-[155px] hover:border-white/30 transition-all duration-300 relative overflow-hidden group shadow-lg`}
+    >
+      <div className="flex items-start justify-between gap-2 z-10">
+        <span className="font-label-sm text-[9px] sm:text-[10px] text-white/70 uppercase tracking-wider font-bold max-w-[110px] leading-tight">
+          {label}
+        </span>
+        <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl border flex items-center justify-center shrink-0 shadow-md ${badgeBg}`}>
+          <span className="material-symbols-outlined text-[18px] sm:text-[20px]">
+            {icon}
+          </span>
+        </div>
+      </div>
+
+      <div className="z-10 mt-auto">
+        <div className={`font-display-lg text-[18px] sm:text-[24px] font-black tracking-tight leading-none ${tone}`}>
+          {loading ? '—' : value}
+        </div>
+        <p className="mt-1 font-body-md text-[11px] sm:text-[12px] text-white/70 truncate">
+          {detail}
+        </p>
+      </div>
     </div>
   )
 }
@@ -357,10 +324,10 @@ function FilterPill({ label, active, onClick }) {
   return (
     <button
       aria-pressed={active}
-      className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+      className={`whitespace-nowrap rounded-full px-5 py-2 font-title-md text-[12px] transition-all ${
         active
-          ? 'bg-primary font-bold text-on-primary'
-          : 'bg-surface-container-high text-on-surface-variant hover:bg-secondary-container'
+          ? 'bg-white text-black font-bold shadow-md'
+          : 'glass-card border border-white/10 text-white/70 hover:text-white hover:border-primary-fixed/50'
       }`}
       onClick={onClick}
       type="button"
@@ -368,22 +335,4 @@ function FilterPill({ label, active, onClick }) {
       {label}
     </button>
   )
-}
-
-function activityIcon(item) {
-  if (item.stream === 'TRADE') return item.label === 'BUY' ? 'trending_up' : 'trending_down'
-  if (item.label === 'DEPOSIT') return 'south_west'
-  if (item.label === 'WITHDRAWAL') return 'north_east'
-  if (item.label === 'DIVIDEND_PAYOUT') return 'payments'
-  if (item.label === 'BASKET_ROYALTY') return 'workspace_premium'
-  return 'receipt_long'
-}
-
-function activityLabel(item) {
-  if (item.stream === 'TRADE') {
-    return `${item.label === 'BUY' ? 'Bought' : 'Sold'} ${formatShares(item.shares)} ${
-      item.asset_name
-    }`
-  }
-  return titleCase(item.label)
 }

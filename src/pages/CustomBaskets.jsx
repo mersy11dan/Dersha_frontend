@@ -21,9 +21,9 @@ import {
 } from '../lib/format'
 
 const TABS = [
-  { id: 'mine', label: 'My baskets' },
-  { id: 'market', label: 'On the market' },
-  { id: 'royalties', label: 'Royalties' },
+  { id: 'mine', label: 'My Baskets' },
+  { id: 'market', label: 'On The Market' },
+  { id: 'royalties', label: 'Royalties Telemetry' },
 ]
 
 export default function CustomBaskets() {
@@ -48,45 +48,43 @@ export default function CustomBaskets() {
 
   return (
     <DashboardLayout activeNav="custom-baskets" sidebarVariant="exchange">
-      <div className="flex flex-1 flex-col gap-8 px-6 py-8 md:px-10">
-        <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div className="flex flex-1 flex-col gap-8 font-body-md text-on-surface">
+        <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between border-b border-white/10 pb-6">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold tracking-tight text-on-surface lg:text-4xl">
-                Custom baskets
+              <h1 className="font-display-lg text-[32px] sm:text-[40px] font-extrabold text-white leading-tight">
+                Custom Index Baskets
               </h1>
               <LiveBadge status={realtimeStatus} />
             </div>
-            <p className="mt-2 max-w-xl text-on-surface-variant">
-              Bundle assets you own into a single instrument, sell units of it, and collect a
-              royalty on every trade that follows.
+            <p className="mt-1 font-body-md text-[14px] text-white/60">
+              Bundle assets you hold into index units, trade on exchange, and earn automated 0.5% creator royalties.
             </p>
           </div>
           <button
-            className="flex w-fit items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-bold text-on-primary transition-opacity hover:opacity-90"
+            className="px-6 py-2.5 bg-primary-fixed text-on-primary rounded-xl font-title-md text-[13px] font-bold shadow-[0_0_15px_rgba(213,251,69,0.4)] hover:brightness-110 transition-all flex items-center justify-center gap-2"
             onClick={() => setBuilding(true)}
             type="button"
           >
-            <span aria-hidden="true" className="material-symbols-outlined text-[20px]">
-              add
-            </span>
-            Build a basket
+            <span>+ BUILD INDEX BASKET</span>
+            <span className="material-symbols-outlined text-[16px] leading-none">arrow_forward</span>
           </button>
         </header>
 
+        {/* Tab Switcher */}
         <div
           aria-label="Basket view"
-          className="flex w-fit rounded-xl bg-surface-container-low p-1"
+          className="flex w-fit rounded-full border border-white/10 bg-black/40 p-1 font-title-md text-[13px] backdrop-blur-md"
           role="group"
         >
           {TABS.map((item) => (
             <button
               key={item.id}
               aria-pressed={tab === item.id}
-              className={`rounded-lg px-5 py-2 text-sm font-bold transition-colors ${
+              className={`rounded-full px-6 py-2 uppercase transition-all ${
                 tab === item.id
-                  ? 'bg-surface-container-lowest text-primary shadow-sm'
-                  : 'text-on-surface-variant hover:text-primary'
+                  ? 'bg-primary-fixed text-on-primary font-bold shadow-[0_0_12px_rgba(213,251,69,0.4)]'
+                  : 'text-white/60 hover:text-white'
               }`}
               onClick={() => setTab(item.id)}
               type="button"
@@ -97,7 +95,7 @@ export default function CustomBaskets() {
         </div>
 
         {active.loading && !active.data ? (
-          <LoadingPanel label="Loading baskets" />
+          <LoadingPanel label="Loading custom baskets..." />
         ) : active.error ? (
           <ErrorPanel error={active.error} onRetry={active.refetch} />
         ) : tab === 'mine' ? (
@@ -130,75 +128,74 @@ function MineTab({ baskets, onBuild }) {
       <EmptyPanel
         action={
           <button
-            className="rounded-xl bg-primary px-6 py-2.5 text-sm font-bold text-on-primary transition-opacity hover:opacity-90"
+            className="px-6 py-2.5 bg-primary-fixed text-on-primary rounded-xl font-title-md text-[13px] font-bold shadow-[0_0_15px_rgba(213,251,69,0.4)] hover:brightness-110 transition-all"
             onClick={onBuild}
             type="button"
           >
-            Build your first basket
+            BUILD YOUR FIRST BASKET
           </button>
         }
-        description="A basket pools shares you already hold into one instrument other investors can buy fractions of."
+        description="Pool sub-fund shares you own into a single index instrument."
         icon="shopping_basket"
-        title="You have not created or bought a basket yet"
+        title="YOU HAVE NOT CREATED OR BOUGHT A BASKET YET"
       />
     )
   }
 
   return (
-    <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+    <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
       {baskets.map((basket) => (
         <Link
           key={basket.basket_id}
-          className="wallet-panel flex flex-col gap-4 p-6 transition-colors hover:border-primary/40"
+          className="group glass-card rounded-[24px] p-6 flex flex-col gap-4 hover:-translate-y-1 hover:border-primary-fixed/40 transition-all duration-300"
           to={`/custom-baskets/${basket.basket_id}`}
         >
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <div className="mb-1.5 flex flex-wrap items-center gap-2">
+              <div className="mb-2 flex flex-wrap items-center gap-2">
                 {basket.is_creator && (
-                  <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
-                    Creator
+                  <span className="bg-primary-fixed/10 text-primary-fixed border border-primary-fixed/20 px-2.5 py-0.5 rounded-full font-label-sm text-[10px] font-bold uppercase">
+                    CREATOR
                   </span>
                 )}
-                <span className="rounded bg-surface-container-high px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
+                <span className="bg-white/10 text-white/80 px-2.5 py-0.5 rounded-full font-label-sm text-[10px] uppercase">
                   {titleCase(basket.lifecycle_status)}
                 </span>
               </div>
-              <h3 className="truncate text-lg font-semibold text-on-surface">
+              <h3 className="truncate font-title-md text-[20px] font-bold text-white group-hover:text-primary-fixed transition-colors">
                 {basket.basket_name}
               </h3>
-              <p className="mt-0.5 text-sm text-on-surface-variant">
-                {basket.constituent_count} sub-funds ·{' '}
-                {formatShares(basket.total_basket_shares)} units issued
+              <p className="mt-0.5 font-body-md text-[13px] text-white/60">
+                {basket.constituent_count} SUB-FUNDS · {formatShares(basket.total_basket_shares)} UNITS ISSUED
               </p>
             </div>
             <div className="shrink-0 text-right">
-              <p className="text-xs text-outline">NAV per unit</p>
-              <p className="text-xl font-bold text-on-surface">
+              <p className="font-label-sm text-[10px] text-white/50 uppercase">NAV PER UNIT</p>
+              <p className="font-display-lg text-[20px] text-white font-extrabold tracking-tight">
                 {formatEtb(basket.nav_per_basket_share_etb, { decimals: 2 })}
               </p>
             </div>
           </div>
 
-          <dl className="flex flex-wrap gap-x-8 gap-y-3 border-t border-outline-variant/20 pt-4">
-            <Stat label="Basket NAV" value={formatEtb(basket.nav_total_etb)} />
+          <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3 rounded-2xl bg-white/5 border border-white/10 p-4 font-body-md text-[13px]">
+            <Stat label="BASKET NAV" value={formatEtb(basket.nav_total_etb)} />
             <Stat
-              label="You hold"
-              value={`${formatShares(basket.my_basket_shares)} units`}
+              label="YOU HOLD"
+              value={`${formatShares(basket.my_basket_shares)} UNITS`}
             />
             <Stat
-              label="Your stake"
-              tone="text-primary"
+              label="YOUR STAKE"
+              tone="text-primary-fixed font-bold"
               value={formatEtb(basket.my_position_value_etb, { decimals: 2 })}
             />
             <Stat
-              label="Royalty"
+              label="ROYALTY RATE"
               value={formatPercentage(basket.creator_royalty_percentage, 2)}
             />
           </dl>
 
-          <p className="text-xs text-outline">
-            NAV last marked {formatDateTime(basket.nav_last_calculated_at)}
+          <p className="font-label-sm text-[10px] text-white/40">
+            NAV LAST CALCULATED AT {formatDateTime(basket.nav_last_calculated_at)}
           </p>
         </Link>
       ))}
@@ -210,15 +207,15 @@ function MarketTab({ listings }) {
   if (listings.length === 0) {
     return (
       <EmptyPanel
-        description="When an investor offers units of their basket for sale, they show up here."
+        description="Baskets offered by other investors will appear here."
         icon="storefront"
-        title="No baskets listed right now"
+        title="NO BASKETS LISTED RIGHT NOW"
       />
     )
   }
 
   return (
-    <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+    <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
       {listings.map((listing) => (
         <BasketCard key={listing.listing_id} listing={listing} />
       ))}
@@ -230,9 +227,9 @@ function RoyaltiesTab({ rows }) {
   if (rows.length === 0) {
     return (
       <EmptyPanel
-        description="Once someone trades a basket you created, your 0.5% cut lands in your wallet and is tallied here."
+        description="When trades occur on your index basket, your 0.5% royalty is credited to your wallet and logged here."
         icon="workspace_premium"
-        title="No royalties earned yet"
+        title="NO ROYALTIES EARNED YET"
       />
     )
   }
@@ -240,32 +237,31 @@ function RoyaltiesTab({ rows }) {
   const total = rows.reduce((sum, row) => sum + row.royalty_earned_etb, 0)
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="wallet-panel p-6">
-        <p className="text-xs text-outline">Lifetime royalties</p>
-        <p className="mt-1 text-3xl font-bold text-primary">
+    <div className="flex flex-col gap-6 font-body-md text-[13px]">
+      <div className="glass-card rounded-[24px] p-6 border border-white/10">
+        <p className="font-label-sm text-[10px] text-white/50 uppercase">LIFETIME ROYALTIES EARNED</p>
+        <p className="mt-1 font-display-lg text-[32px] font-extrabold text-primary-fixed">
           {formatEtb(total, { decimals: 2 })}
         </p>
-        <p className="mt-2 text-sm text-on-surface-variant">
-          Paid instantly out of every basket trade, on top of any units you still hold.
+        <p className="mt-2 text-[13px] text-white/60">
+          Automatically credited on every trade execution of your created index baskets.
         </p>
       </div>
 
-      <div className="wallet-panel divide-y divide-outline-variant/20">
+      <div className="glass-card rounded-[24px] overflow-hidden border border-white/10 divide-y divide-white/5">
         {rows.map((row) => (
           <Link
             key={row.basket_id}
-            className="flex items-center justify-between gap-4 p-5 transition-colors hover:bg-surface-container-low"
+            className="flex items-center justify-between gap-4 p-5 hover:bg-white/5 transition-colors"
             to={`/custom-baskets/${row.basket_id}`}
           >
             <div className="min-w-0">
-              <p className="truncate font-semibold text-on-surface">{row.basket_name}</p>
-              <p className="text-sm text-on-surface-variant">
-                {row.trade_count} trade{row.trade_count === 1 ? '' : 's'} ·{' '}
-                {formatEtb(row.gross_volume_etb)} of volume
+              <p className="truncate font-title-md text-[15px] font-bold text-white">{row.basket_name}</p>
+              <p className="font-body-md text-[12px] text-white/50 mt-0.5">
+                {row.trade_count} TRADES · {formatEtb(row.gross_volume_etb)} VOLUME
               </p>
             </div>
-            <p className="shrink-0 font-bold text-primary">
+            <p className="shrink-0 font-title-md text-[15px] font-extrabold text-primary-fixed">
               {formatEtb(row.royalty_earned_etb, { decimals: 2 })}
             </p>
           </Link>
@@ -275,11 +271,11 @@ function RoyaltiesTab({ rows }) {
   )
 }
 
-function Stat({ label, value, tone = 'text-on-surface' }) {
+function Stat({ label, value, tone = 'text-white' }) {
   return (
     <div>
-      <dt className="text-xs text-outline">{label}</dt>
-      <dd className={`text-sm font-bold ${tone}`}>{value}</dd>
+      <dt className="font-label-sm text-[10px] text-white/50 uppercase">{label}</dt>
+      <dd className={`font-title-md text-[13px] font-medium mt-0.5 ${tone}`}>{value}</dd>
     </div>
   )
 }

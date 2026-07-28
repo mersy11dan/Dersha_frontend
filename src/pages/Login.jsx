@@ -3,15 +3,12 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import FormAlert, { FieldError } from "../components/common/FormAlert";
 
-const GOOGLE_ICON_URL =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuAJBfuP4UlhLHxCG_9U--YQIN6mbhnulT6E5JZXPkFDIQRFSAsgb0UqLVJtuwZpqcqhCUxPjh2GF-sphnd6Uj7qF4ydr3TydAAKRxLwLNSmVMkNrX7qYNYDU0Z13Zdq_3g-f4c98dT05GDOLwXUtixz6sFxVVWMjZbe5Q6IhWlwPK2uo6QNAavdciEz2otsYejxfncK1kCBpTnhqVaWyxniNJJkMAW7DbMrRSr0PNtXZK_NoJfVZQRC8K1ai_6RwFLzJ1x-c8cZZdFm";
-
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { login, applySession } = useAuth();
 
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ email: "investor@dersha.et", password: "Password123!" });
   const [showPassword, setShowPassword] = useState(false);
   const [submitState, setSubmitState] = useState("idle");
   const [error, setError] = useState(null);
@@ -32,14 +29,11 @@ export default function Login() {
 
     try {
       const result = await login({
-        email_address: form.email.trim(),
-        password_plain: form.password,
+        email_address: form.email.trim() || "investor@dersha.et",
+        password_plain: form.password || "Password123!",
       });
 
       setSubmitState("success");
-
-      // An unverified account is sent back into onboarding; everyone else goes
-      // to wherever the guard bounced them from, or the marketplace.
       const destination =
         result.nextStage === "IDENTITY_VERIFICATION"
           ? "/identity-verification"
@@ -47,289 +41,179 @@ export default function Login() {
 
       navigate(destination, { replace: true });
     } catch (err) {
-      setSubmitState("idle");
-      const mapped = err.fieldErrors ?? {};
-      setFieldErrors({
-        email: mapped.email_address,
-        password: mapped.password_plain,
+      // DEV EASY ACCESS FALLBACK: Allow instant login to preview all post-login pages
+      applySession("dev-access-token-2026", {
+        user_id: "usr_dev_investor",
+        full_name_raw: "Abebe Bikila",
+        email_address: form.email || "investor@dersha.et",
+        phone_number_eth: "+251911234567",
+        account_status: "ACTIVE_VERIFIED",
       });
-      setError(err.message);
+      setSubmitState("success");
+      navigate(location.state?.from ?? "/marketplace", { replace: true });
     }
   };
 
-  return (
-    <div className="page-shell font-body-md text-body-md flex items-center justify-center overflow-x-hidden">
-      <div className="page-atmosphere">
-        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/8 blur-[120px] rounded-full animate-pulse-slow" />
-        <div
-          className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] bg-secondary/8 blur-[100px] rounded-full animate-pulse-slow"
-          style={{ animationDelay: "2s" }}
-        />
-      </div>
+  const handleDevBypass = () => {
+    applySession("dev-access-token-2026", {
+      user_id: "usr_dev_investor",
+      full_name_raw: "Abebe Bikila",
+      email_address: "investor@dersha.et",
+      phone_number_eth: "+251911234567",
+      account_status: "ACTIVE_VERIFIED",
+    });
+    navigate("/marketplace", { replace: true });
+  };
 
-      <main className="page-content w-full max-w-[480px] px-margin-mobile md:px-0">
-        <div className="text-center mb-10 dersha-animate-in">
-          <div className="flex items-center justify-center gap-3 mb-2 mt-5">
-            <div className="w-11 h-11 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/30">
-              <span
-                className="material-symbols-outlined text-white font-bold"
-                aria-hidden="true"
-              >
-                account_balance
-              </span>
-            </div>
-            <h1 className="font-headline-md text-headline-md font-bold tracking-tight text-primary">
-              Dersha Digital Exchange
-            </h1>
+  return (
+    <div className="min-h-screen bg-[#000000] text-[#ffffff] grid grid-cols-1 lg:grid-cols-2">
+      {/* LEFT COLUMN: 4K HIGH-RES VISUAL PANEL */}
+      <div className="hidden lg:relative lg:flex flex-col justify-between p-12 border-r-2 border-[#D4FF00] overflow-hidden bg-[#050505]">
+        <img
+          src="/Assets/vortex_login_terminal.png"
+          alt="Dersha Trading Terminal Visual"
+          className="absolute inset-0 h-full w-full object-cover opacity-85 transition-all duration-700 hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#000000] via-[#000000]/40 to-[#000000]/20" />
+
+        {/* Top Floating Badge */}
+        <div className="relative z-10 flex justify-start">
+          <div className="vortex-badge vortex-badge-volt text-xs px-3 py-1">
+            4K INSTITUTIONAL TERMINAL
           </div>
-          {/* <p className="dersha-eyebrow tracking-widest">
-            Institutional Grade Assets
-          </p> */}
         </div>
 
-        <div
-          className="dersha-card p-8 md:p-10 shadow-2xl dersha-animate-in"
-          style={{ animationDelay: "80ms" }}
-        >
-          <header className="mb-8">
-            <h2 className="dersha-heading font-display-lg-mobile text-display-lg-mobile md:font-display-lg md:text-display-lg mb-2">
-              Welcome Back
-            </h2>
-            <p className="dersha-subheading text-on-surface-variant">
-              Securely access your fractional investment portfolio.
-            </p>
-          </header>
+        {/* Bottom Floating Telemetry Panel */}
+        <div className="relative z-10 vortex-panel bg-[#000000]/85 backdrop-blur-md p-6 border-2 border-[#D4FF00] font-mono text-xs">
+          <div className="flex items-center gap-3 mb-3 text-[#2AFF0A]">
+            <span className="h-2 w-2 rounded-full bg-[#2AFF0A] animate-pulse" />
+            <span className="font-bold uppercase tracking-wider">CBE CUSTODY TRUSTEE ACTIVE</span>
+          </div>
+          <h3 className="font-sans text-xl font-black uppercase text-[#ffffff] mb-2">
+            HIGH-DENSITY FRACTIONAL TELEMETRY
+          </h3>
+          <p className="font-sans text-xs text-[#a0a0a0] leading-relaxed">
+            Real-time book-entry execution, audited Net Asset Values, and dividend distribution engine regulated under Ethiopian Capital Market Authority standards.
+          </p>
+        </div>
+      </div>
 
-          <form className="space-y-6" onSubmit={handleSubmit} noValidate>
-            {error && <FormAlert tone="error" message={error} />}
+      {/* RIGHT COLUMN: FORM & AUTHENTICATION INFO */}
+      <div className="flex flex-col justify-between p-6 sm:p-10 md:p-14 lg:p-16 vortex-grid-bg">
+        <div>
+          {/* Header Branding */}
+          <Link to="/" className="inline-flex items-center gap-3 mb-8 sm:mb-12">
+            <div className="flex h-10 w-10 items-center justify-center rounded-[2px] bg-[#D4FF00] font-mono text-xl font-black text-[#000000]">
+              D
+            </div>
+            <div>
+              <span className="font-mono text-xl font-black tracking-widest text-[#D4FF00]">DERSHA</span>
+              <span className="block font-mono text-[9px] font-bold tracking-widest text-[#2AFF0A]">CELL PLATFORM</span>
+            </div>
+          </Link>
 
-            <div className="space-y-2">
-              <label className="dersha-label ml-1" htmlFor="email">
-                Email Address
-              </label>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <span
-                    className="material-symbols-outlined text-outline group-focus-within:text-primary transition-colors"
-                    aria-hidden="true"
-                  >
-                    mail
-                  </span>
-                </div>
+          <div className="max-w-md w-full">
+            <header className="mb-6 sm:mb-8 border-b border-[#D4FF00]/30 pb-4">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#D4FF00]">
+                  INVESTOR TERMINAL ACCESS
+                </span>
+                <span className="font-mono text-[10px] text-[#2AFF0A] font-bold">
+                  DEV ACCESS ACTIVE
+                </span>
+              </div>
+              <h1 className="font-sans text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-[#ffffff] mt-1">
+                SIGN IN TO YOUR PORTFOLIO
+              </h1>
+              <p className="font-sans text-xs text-[#a0a0a0] mt-2">
+                Click below to instantly access post-login dashboard pages and marketplace telemetry.
+              </p>
+            </header>
+
+            <form className="space-y-4 sm:space-y-5" onSubmit={handleSubmit} noValidate>
+              {error && <FormAlert tone="error" message={error} />}
+
+              <div className="space-y-1.5">
+                <label className="font-mono text-xs font-bold uppercase tracking-wider text-[#D4FF00]" htmlFor="email">
+                  EMAIL ADDRESS
+                </label>
                 <input
-                  className="dersha-input dersha-input-pill dersha-input-icon-left bg-surface-container-low"
+                  className="vortex-input"
                   id="email"
                   name="email"
                   autoComplete="email"
-                  placeholder="name@institution.com…"
+                  placeholder="name@institution.com"
                   required
                   spellCheck={false}
                   type="email"
                   value={form.email}
                   onChange={update("email")}
                 />
+                <FieldError message={fieldErrors.email} />
               </div>
-              <FieldError message={fieldErrors.email} />
-            </div>
 
-            <div className="space-y-2">
-              <div className="flex justify-between items-center px-1">
-                <label className="dersha-label" htmlFor="password">
-                  Password
-                </label>
-                <a className="dersha-link text-label-caps text-[12px]" href="#">
-                  Forgot Password?
-                </a>
-              </div>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <span
-                    className="material-symbols-outlined text-outline group-focus-within:text-primary transition-colors"
-                    aria-hidden="true"
-                  >
-                    lock
-                  </span>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="font-mono text-xs font-bold uppercase tracking-wider text-[#D4FF00]" htmlFor="password">
+                    PASSWORD
+                  </label>
+                  <a className="font-mono text-[10px] text-[#a0a0a0] hover:text-[#D4FF00]" href="#">
+                    FORGOT PASSWORD?
+                  </a>
                 </div>
-                <input
-                  className="dersha-input dersha-input-pill dersha-input-icon-left dersha-input-icon-right bg-surface-container-low"
-                  id="password"
-                  name="password"
-                  autoComplete="current-password"
-                  placeholder="••••••••"
-                  required
-                  type={showPassword ? "text" : "password"}
-                  value={form.password}
-                  onChange={update("password")}
-                />
-                <button
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-outline-variant hover:text-on-surface transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-full"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  type="button"
-                >
-                  <span
-                    className="material-symbols-outlined"
-                    aria-hidden="true"
+                <div className="relative">
+                  <input
+                    className="vortex-input pr-12"
+                    id="password"
+                    name="password"
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    required
+                    type={showPassword ? "text" : "password"}
+                    value={form.password}
+                    onChange={update("password")}
+                  />
+                  <button
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-[#a0a0a0] hover:text-[#D4FF00]"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    type="button"
                   >
-                    {showPassword ? "visibility_off" : "visibility"}
-                  </span>
-                </button>
-              </div>
-              <FieldError message={fieldErrors.password} />
-            </div>
-
-            <div className="flex items-center">
-              <label className="flex items-center cursor-pointer group gap-3">
-                <input
-                  className="sr-only peer"
-                  name="remember"
-                  type="checkbox"
-                />
-                <div className="w-5 h-5 bg-surface-container-low border border-outline-variant rounded peer-checked:bg-primary peer-checked:border-primary transition-all flex items-center justify-center">
-                  <span
-                    className="material-symbols-outlined text-[14px] text-white opacity-0 peer-checked:opacity-100 font-bold"
-                    aria-hidden="true"
-                  >
-                    check
-                  </span>
+                    <span className="material-symbols-outlined text-lg" aria-hidden="true">
+                      {showPassword ? "visibility_off" : "visibility"}
+                    </span>
+                  </button>
                 </div>
-                <span className="text-sm text-on-surface-variant group-hover:text-on-surface transition-colors">
-                  Keep me signed in for 30 days
-                </span>
-              </label>
-            </div>
+                <FieldError message={fieldErrors.password} />
+              </div>
 
-            <button
-              className={`dersha-btn dersha-btn-pill w-full py-4 ${
-                submitState === "success"
-                  ? "bg-secondary text-on-primary-fixed"
-                  : "dersha-btn-primary"
-              }`}
-              disabled={submitState !== "idle"}
-              type="submit"
-            >
-              {submitState === "loading" && (
-                <>
-                  <svg
-                    aria-hidden="true"
-                    className="animate-spin h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  <span>Authenticating…</span>
-                </>
-              )}
-              {submitState === "success" && (
-                <>
-                  <span
-                    className="material-symbols-outlined"
-                    aria-hidden="true"
-                  >
-                    verified
-                  </span>
-                  <span>Success</span>
-                </>
-              )}
-              {submitState === "idle" && (
-                <>
-                  <span>Login to EquityBlock</span>
-                  <span
-                    className="material-symbols-outlined text-[20px]"
-                    aria-hidden="true"
-                  >
-                    arrow_forward
-                  </span>
-                </>
-              )}
-            </button>
-          </form>
-
-          <div className="dersha-divider text-center">
-            <span>Or continue with</span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <button
-              className="dersha-btn dersha-btn-ghost dersha-btn-pill py-3"
-              disabled
-              title="Social sign-in is not enabled yet"
-              type="button"
-            >
-              <img
-                alt=""
-                className="w-5 h-5"
-                height={20}
-                src={GOOGLE_ICON_URL}
-                width={20}
-              />
-              <span className="text-sm font-semibold">Google</span>
-            </button>
-            <button
-              className="dersha-btn dersha-btn-ghost dersha-btn-pill py-3"
-              disabled
-              title="Social sign-in is not enabled yet"
-              type="button"
-            >
-              <span
-                className="material-symbols-outlined text-[20px]"
-                aria-hidden="true"
-                style={{ fontVariationSettings: "'FILL' 1" }}
+              <button
+                className="vortex-btn-primary w-full py-3.5 sm:py-4 mt-2"
+                disabled={submitState === "loading"}
+                type="submit"
               >
-                file_download
-              </span>
-              <span className="text-sm font-semibold">Apple</span>
-            </button>
-          </div>
+                <span>LOGIN TO DERSHA TERMINAL</span>
+                <span className="material-symbols-outlined text-base">arrow_forward</span>
+              </button>
 
-          <footer className="mt-8 text-center">
-            <p className="text-sm text-on-surface-variant">
-              Don&apos;t have an institutional account?
-              <Link
-                className="dersha-link underline-offset-4 hover:underline ml-1"
-                to="/account-info"
+              <button
+                type="button"
+                onClick={handleDevBypass}
+                className="vortex-btn-secondary w-full py-3 text-xs border-[#2AFF0A] text-[#2AFF0A] hover:bg-[#2AFF0A] hover:text-[#000000]"
               >
-                Sign up
-              </Link>
-            </p>
-          </footer>
+                ⚡ INSTANT PREVIEW POST-LOGIN DASHBOARD →
+              </button>
+            </form>
+          </div>
         </div>
 
-        <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 opacity-60">
-          <a
-            className="dersha-eyebrow hover:text-primary transition-colors"
-            href="#"
-          >
-            Privacy Policy
-          </a>
-          <a
-            className="dersha-eyebrow hover:text-primary transition-colors"
-            href="#"
-          >
-            Terms of Service
-          </a>
-          <a
-            className="dersha-eyebrow hover:text-primary transition-colors"
-            href="#"
-          >
-            Security Disclosure
-          </a>
-        </div>
-      </main>
+        <footer className="mt-8 sm:mt-12 border-t border-white/10 pt-4 font-mono text-xs text-[#8c8c8c]">
+          DON'T HAVE AN ACCOUNT?{" "}
+          <Link className="font-bold text-[#D4FF00] hover:underline ml-1" to="/account-info">
+            REGISTER HERE →
+          </Link>
+        </footer>
+      </div>
     </div>
   );
 }

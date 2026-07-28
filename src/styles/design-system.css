@@ -1,481 +1,249 @@
 /*
- * DERSHA Design System
- * Use these tokens and classes when porting pages from dirshaWebClient.
- * Skills: web-design-guidelines, design-taste-frontend
+ * DERSHA / CELL SYSTEM & ROBINHOOD FINTECH DESIGN SYSTEM
+ * Landing Page & Post-Login Tokens
  */
 
 :root {
-  /* Brand */
-  --brand-primary: #059669;
-  --brand-primary-hover: #047857;
-  --brand-primary-light: #68dba9;
-  --brand-primary-muted: rgba(5, 150, 105, 0.15);
-  --brand-accent: #4edea3;
-  --brand-glow: rgba(5, 150, 105, 0.25);
+  /* Luminous Dark Institutional Palette */
+  --rh-green: #d5fb45;
+  --rh-green-hover: #b5de25;
+  --rh-green-subtle: rgba(213, 251, 69, 0.15);
+  --rh-green-glow: rgba(213, 251, 69, 0.35);
 
-  /* Surfaces */
-  --surface-base: #0a0f0c;
-  --surface-raised: #0f1511;
-  --surface-overlay: #171d19;
-  --surface-elevated: #1b211d;
-  --surface-highlight: #252b28;
+  --rh-red: #FF3B30;
+  --rh-red-subtle: rgba(255, 59, 48, 0.12);
 
-  /* Text */
-  --text-primary: #f0f4f2;
-  --text-secondary: #bccac0;
-  --text-muted: #87948b;
-  --text-on-brand: #ffffff;
+  --vortex-volt: #d5fb45;
+  --vortex-cyber: #d5fb45;
 
-  /* Borders */
-  --border-subtle: rgba(135, 148, 139, 0.12);
-  --border-default: rgba(135, 148, 139, 0.22);
-  --border-strong: rgba(135, 148, 139, 0.35);
-  --border-focus: var(--brand-primary);
+  /* Dark Theme Tokens */
+  --rh-dark-bg: #050505;
+  --rh-dark-surface: rgba(18, 20, 20, 0.6);
+  --rh-dark-border: rgba(255, 255, 255, 0.15);
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.24);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.28);
-  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.36);
-  --shadow-glow: 0 0 24px var(--brand-glow);
-  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  /* Light Theme Tokens */
+  --rh-light-bg: #f7f9fc;
+  --rh-light-surface: #ffffff;
+  --rh-light-border: rgba(0, 0, 0, 0.06);
 
-  /* Radius (one system) */
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.25rem;
-  --radius-pill: 9999px;
-
-  /* Motion */
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --duration-fast: 150ms;
-  --duration-normal: 250ms;
-  --duration-slow: 400ms;
+  /* Micro-animations */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Page shell */
+/* Base Page Shell */
 .page-shell {
   min-height: 100dvh;
-  background-color: var(--surface-base);
-  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.page-atmosphere {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
-}
-
-.page-atmosphere::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 60% 50% at 85% 10%, rgba(5, 150, 105, 0.08), transparent 60%),
-    radial-gradient(ellipse 50% 40% at 10% 90%, rgba(78, 222, 163, 0.06), transparent 55%);
-}
-
-.page-content {
   position: relative;
-  z-index: 10;
 }
 
-/* Glass cards */
-.dersha-card {
-  background: rgba(23, 29, 25, 0.72);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-default);
-  box-shadow: var(--shadow-md), var(--shadow-inset);
-  border-radius: var(--radius-xl);
+/* Subtle Technical Grid Background */
+.vortex-grid-bg {
+  background-size: 36px 36px;
+  background-image: 
+    linear-gradient(to right, rgba(212, 255, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(212, 255, 0, 0.04) 1px, transparent 1px);
 }
 
-.dersha-card-elevated {
-  background: rgba(27, 33, 29, 0.65);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-lg), var(--shadow-inset);
-  border-radius: var(--radius-xl);
+/* Landing Page Yellow Volt Card & Stark Panels */
+.vortex-panel {
+  background: #050505;
+  border: 1.5px solid #D4FF00;
+  border-radius: 2px;
+  box-shadow: 4px 4px 0px #000000;
+  transition: all 150ms ease-out;
 }
 
-/* Header */
-.dersha-header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  height: 4rem;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(10, 15, 12, 0.82);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border-subtle);
+.vortex-panel-dark {
+  background: #000000;
+  border: 1.5px solid rgba(212, 255, 0, 0.35);
+  border-radius: 2px;
 }
 
-.dersha-brand {
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--brand-primary-light);
+/* Iconic Yellow Call-to-Action Card Near Landing Page Footer */
+.vortex-panel-volt {
+  background: #D4FF00 !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  border-radius: 4px !important;
+  box-shadow: 6px 6px 0px #ffffff, 10px 10px 0px #000000 !important;
 }
 
-.dersha-brand-display {
-  font-size: 1.5rem;
-  line-height: 1.2;
-}
-
-.dersha-brand-logo {
-  display: block;
-  height: 2.875rem;
-  width: auto;
-}
-
-@media (max-width: 480px) {
-  .dersha-brand-logo {
-    height: 2.25rem;
-  }
-}
-
-/* Typography helpers */
-.dersha-heading {
-  color: var(--text-primary);
-  text-wrap: balance;
-  letter-spacing: -0.02em;
-}
-
-.dersha-subheading {
-  color: var(--text-secondary);
-  text-wrap: pretty;
-  line-height: 1.6;
-}
-
-.dersha-eyebrow {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-/* Form elements */
-.dersha-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-.dersha-input {
-  width: 100%;
-  background: var(--surface-overlay);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  padding-block: 1rem;
-  padding-inline: 1.25rem;
-  color: var(--text-primary);
-  transition:
-    border-color var(--duration-normal) var(--ease-out),
-    box-shadow var(--duration-normal) var(--ease-out),
-    background-color var(--duration-normal) var(--ease-out);
-}
-
-.dersha-input-icon-left {
-  padding-left: 3rem;
-}
-
-.dersha-input-icon-right {
-  padding-right: 3rem;
-}
-
-.dersha-input::placeholder {
-  color: var(--text-muted);
-}
-
-.dersha-input:focus {
-  outline: none;
-  border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px var(--brand-primary-muted);
-  background: var(--surface-elevated);
-}
-
-.dersha-input-pill {
-  border-radius: var(--radius-pill);
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-}
-
-.dersha-input-wrap:focus-within {
-  border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px var(--brand-primary-muted);
+.vortex-panel-hover:hover {
+  border-color: #D4FF00;
+  transform: translateY(-2px);
+  box-shadow: 0 0 16px rgba(212, 255, 0, 0.2);
 }
 
 /* Buttons */
-.dersha-btn {
+.vortex-btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 8px;
+  background: #D4FF00;
+  color: #000000;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 14px 24px;
+  border: 2px solid #000000;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 150ms ease-out;
+}
+
+.vortex-btn-primary:hover:not(:disabled) {
+  background: #ffffff;
+  color: #000000;
+  border-color: #000000;
+  box-shadow: 4px 4px 0px #000000;
+}
+
+.vortex-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #000000;
+  color: #D4FF00;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 14px 24px;
+  border: 1.5px solid #D4FF00;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 150ms ease-out;
+}
+
+.vortex-btn-secondary:hover:not(:disabled) {
+  background: #D4FF00;
+  color: #000000;
+  border-color: #000000;
+}
+
+.vortex-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 2px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
   font-weight: 700;
-  border-radius: var(--radius-lg);
-  transition:
-    transform var(--duration-fast) var(--ease-out),
-    background-color var(--duration-normal) var(--ease-out),
-    box-shadow var(--duration-normal) var(--ease-out),
-    opacity var(--duration-normal) var(--ease-out);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.vortex-badge-volt {
+  background: #D4FF00;
+  color: #000000;
+}
+
+.vortex-badge-outline {
+  border: 1px solid #D4FF00;
+  color: #D4FF00;
+  background: rgba(212, 255, 0, 0.08);
+}
+
+.vortex-badge-cyber {
+  border: 1px solid #2AFF0A;
+  color: #2AFF0A;
+  background: rgba(42, 255, 10, 0.08);
+}
+
+/* Robinhood Pill Button */
+.rh-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--rh-green);
+  color: #000000;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  padding: 12px 22px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  transition: all 180ms var(--ease-out);
+  box-shadow: 0 4px 14px rgba(0, 200, 5, 0.3);
   touch-action: manipulation;
 }
 
-.dersha-btn:active:not(:disabled) {
-  transform: scale(0.98);
+.rh-btn-primary:hover:not(:disabled) {
+  background: #00df06;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 200, 5, 0.45);
 }
 
-.dersha-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+.rh-btn-primary:active:not(:disabled) {
+  transform: scale(0.95);
 }
 
-.dersha-btn-primary {
-  background: var(--brand-primary);
-  color: var(--text-on-brand);
-  box-shadow: var(--shadow-sm), 0 8px 20px rgba(5, 150, 105, 0.28);
-}
-
-.dersha-btn-primary:hover:not(:disabled) {
-  background: var(--brand-primary-hover);
-  box-shadow: var(--shadow-glow);
-}
-
-.dersha-btn-pill {
-  border-radius: var(--radius-pill);
-}
-
-.dersha-btn-ghost {
-  background: transparent;
-  border: 1px solid var(--border-default);
-  color: var(--text-secondary);
-}
-
-.dersha-btn-ghost:hover {
-  border-color: var(--border-strong);
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.dersha-link {
-  color: var(--brand-primary-light);
-  font-weight: 600;
-  transition: color var(--duration-fast) var(--ease-out);
-}
-
-.dersha-link:hover {
-  color: var(--brand-accent);
-}
-
-/* Progress steps */
-.dersha-step-track {
-  --step-dot-size: 2.5rem;
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-.dersha-step-track::before {
-  content: "";
-  position: absolute;
-  left: calc(var(--step-dot-size) / 2);
-  right: calc(var(--step-dot-size) / 2);
-  top: calc(var(--step-dot-size) / 2);
-  height: 2px;
-  transform: translateY(-50%);
-  background: var(--border-subtle);
-  z-index: 0;
-}
-
-.dersha-step-progress {
-  position: absolute;
-  left: calc(var(--step-dot-size) / 2);
-  top: calc(var(--step-dot-size) / 2);
-  width: calc((100% - var(--step-dot-size)) * var(--step-progress, 0));
-  height: 2px;
-  transform: translateY(-50%);
-  background: linear-gradient(90deg, var(--brand-primary), var(--brand-primary-light));
-  z-index: 0;
-  transition: width var(--duration-slow) var(--ease-out);
-}
-
-.dersha-step-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.dersha-step-dot {
-  width: var(--step-dot-size);
-  height: var(--step-dot-size);
-  border-radius: 50%;
-  display: flex;
+.rh-btn-secondary {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  z-index: 1;
-  transition:
-    background-color var(--duration-normal) var(--ease-out),
-    box-shadow var(--duration-normal) var(--ease-out);
+  gap: 8px;
+  background: rgba(0, 200, 5, 0.1);
+  color: var(--rh-green);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 12px 22px;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 200, 5, 0.3);
+  cursor: pointer;
+  transition: all 180ms var(--ease-out);
 }
 
-.dersha-step-dot-active {
-  background: var(--brand-primary);
-  color: var(--text-on-brand);
-  box-shadow: var(--shadow-glow);
+.rh-btn-secondary:hover:not(:disabled) {
+  background: var(--rh-green);
+  color: #000000;
 }
 
-.dersha-step-dot-complete {
-  background: var(--brand-primary);
-  color: var(--text-on-brand);
+.rh-btn-secondary:active:not(:disabled) {
+  transform: scale(0.95);
 }
 
-.dersha-step-dot-pending {
-  background: var(--surface-highlight);
-  border: 1px solid var(--border-default);
-  color: var(--text-muted);
-}
-
-.dersha-step-label-active {
-  color: var(--brand-primary-light);
-}
-
-.dersha-step-label-pending {
-  color: var(--text-muted);
-}
-
-/* Selection cards */
-.dersha-select-card {
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  background: var(--surface-overlay);
-  transition:
-    border-color var(--duration-normal) var(--ease-out),
-    background-color var(--duration-normal) var(--ease-out),
-    box-shadow var(--duration-normal) var(--ease-out);
-}
-
-.dersha-select-card:hover {
-  border-color: rgba(5, 150, 105, 0.4);
-}
-
-.dersha-select-card-active {
-  border: 2px solid var(--brand-primary);
-  background: var(--brand-primary-muted);
-  box-shadow: var(--shadow-glow);
-}
-
-/* Divider */
-.dersha-divider {
-  position: relative;
-  margin: 2rem 0;
-  display: flex;
-  justify-content: center;
+/* Smooth Robinhood Pill Badge */
+.rh-badge {
+  display: inline-flex;
   align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
 
-.dersha-divider::before {
-  content: "";
-  position: absolute;
-  inset: 50% 0 auto;
-  height: 1px;
-  background: var(--border-subtle);
+.rh-badge-green {
+  background: rgba(0, 200, 5, 0.15);
+  color: #00C805;
 }
 
-.dersha-divider span {
-  position: relative;
-  display: inline-block;
-  padding: 0 1rem;
-  background: var(--surface-elevated);
-  font-size: 0.625rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+.rh-badge-red {
+  background: rgba(255, 59, 48, 0.15);
+  color: #FF3B30;
 }
 
-/* Info / alert box */
-.dersha-info-box {
-  display: flex;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-  border-radius: var(--radius-md);
-  background: rgba(221, 112, 107, 0.08);
-  border: 1px solid rgba(221, 112, 107, 0.18);
-  color: #ffb3ae;
+/* Robinhood Card Container */
+.rh-card {
+  border-radius: 24px;
+  transition: all 250ms var(--ease-out);
 }
 
-.dersha-trust-box {
-  display: flex;
-  gap: 1rem;
-  padding: 1.25rem;
-  border-radius: var(--radius-lg);
-  background: var(--surface-overlay);
-  border: 1px solid var(--border-subtle);
-}
-
-/* Ticker */
-.dersha-ticker {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  height: 2rem;
-  background: var(--surface-base);
-  border-top: 1px solid var(--border-subtle);
-  overflow: hidden;
-  z-index: 50;
-}
-
-/* Entry animation */
-@keyframes dersha-fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.dersha-animate-in {
-  animation: dersha-fade-up var(--duration-slow) var(--ease-out) both;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dersha-animate-in,
-  .animate-pulse-slow,
-  .face-scan-overlay,
-  .shimmer,
-  .animate-marquee {
-    animation: none !important;
-  }
-
-  .dersha-btn:active:not(:disabled) {
-    transform: none;
-  }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .dersha-card,
-  .dersha-card-elevated,
-  .dersha-header,
-  .glass-card,
-  .glass-card-onboarding {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    background: var(--surface-elevated);
-  }
+.rh-card-hover:hover {
+  transform: translateY(-3px);
 }
